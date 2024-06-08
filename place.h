@@ -5,78 +5,80 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MAX_NAME_LEN 32
+#define MAX_NAME_LEN 16
 
 #define TYPE_FF 	0x00
 #define TYPE_GATE 	0x01
 
 typedef struct {
-	double x;
-	double y;
+	uint16_t x;
+	uint16_t y;
 	char* name[MAX_NAME_LEN];
 } Pin;
 
 typedef struct {
 	char* name[MAX_NAME_LEN];
-	uint64_t x;
-	uint64_t y;
+	uint32_t x;
+	uint32_t y;
 } IO;
 
 typedef IO Input;
 typedef IO Output;
 
 typedef struct {
-	uint64_t count;
-	Input* items;
+	uint32_t count;
+	Input** items;
 } IOs;
 
 typedef IOs Inputs;
 typedef IOs Outputs;
 
 typedef struct {
-	uint64_t bits;
+	uint16_t bits;
 	char* name[MAX_NAME_LEN];
-	double width;
-	double height;
-	uint64_t pin_count;
-	Pin* pins;
+	uint16_t width;
+	uint16_t height;
+	uint16_t pin_count;
+	Pin** pins;
 } Block;
 
 typedef Block FF;
 typedef Block Gate;
 
 typedef struct {
-	uint64_t count;
-	Block* items;
+	uint32_t count;
+	Block** items;
 } Blocks;
 
 typedef Blocks FFs;
 typedef Blocks Gates;
 
 typedef struct {
-	double x;
-	double y;
+	uint32_t x;
+	uint32_t y;
 	char* inst_name[MAX_NAME_LEN];
 	char* lib_cell_name[MAX_NAME_LEN];
 } Inst;
 
 typedef struct {
-	uint64_t count;
-	Inst* items;
+	uint32_t count;
+	Inst** items;
 } Insts;
+
+typedef struct {
+	char instName[MAX_NAME_LEN];
+	char libPinName[MAX_NAME_LEN];
+} NetPin;
 
 typedef struct {
     char name[MAX_NAME_LEN];
     int pinCount;
-    struct {
-        char instName[MAX_NAME_LEN];
-        char libPinName[MAX_NAME_LEN];
-    } *pins;
+    NetPin** pins;
 } Net;
 
 typedef struct {
-	uint64_t count;
-	Net* items;
+	uint32_t count;
+	Net** items;
 } Nets;
 
 typedef struct {
@@ -84,11 +86,11 @@ typedef struct {
 	double start_y;
 	double width;
 	double height;
-	uint64_t totalNumOfSites;
+	uint32_t totalNumOfSites;
 } PlacementsRows;
 
 typedef struct {
-	uint64_t count;
+	uint32_t count;
 	PlacementsRows* items;
 } PlacementsRowsSet;
 
@@ -98,7 +100,7 @@ typedef struct {
 } QpinDelay;
 
 typedef struct {
-	uint64_t count;
+	uint32_t count;
 	QpinDelay* items;
 } QpinDelays;
 
@@ -109,7 +111,7 @@ typedef struct {
 } TimingSlack;
 
 typedef struct {
-	uint64_t count;
+	uint32_t count;
 	TimingSlack* items;
 } TimingSlacks;
 
@@ -119,7 +121,7 @@ typedef struct {
 } GatePower;
 
 typedef struct {
-	uint64_t count;
+	uint32_t count;
 	GatePower* items;
 } GatePowers;
 
@@ -156,7 +158,7 @@ typedef struct {
 } Placement;
 
 typedef struct{
-	uint64_t count;
+	uint32_t count;
 	Placement* items;
 } Placements;
 
@@ -165,9 +167,10 @@ typedef struct{
 
 
 typedef struct {
-    double width, height, maxUtil;
+    uint32_t width, height; 
+	double maxUtil;
 } Bin;
 
-int place_main(FF, Gate, Inst*, Pin* inputs, uint64_t inputLen, Pin* outputs, uint64_t outputLen, PlacementsRows*, double DisplacementDelay,  double* timeslack, uint64_t slack_len, double Alpha, double Lambda, double Die_st_x/* Die start x*/, double Die_st_y, double Die_width, double Die_height, Placements* rt/*return*/);
+int place_main(FF, Gate, Inst*, Pin* inputs, uint32_t inputLen, Pin* outputs, uint32_t outputLen, PlacementsRows*, double DisplacementDelay,  double* timeslack, uint32_t slack_len, double Alpha, double Lambda, double Die_st_x/* Die start x*/, double Die_st_y, double Die_width, double Die_height, Placements* rt/*return*/);
 
 #endif // PLACE_H
