@@ -1,0 +1,53 @@
+# CMake build files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Output binaries
+*.out
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build directories
+/build/
+/bin/
+/lib/
+/obj/
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# User-specific files
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+*.user
+*.sublime-project
+*.sublime-workspace
+
+# Generated files
+*.o
+*.obj
+*.pyc
+*.pyo
+*.pdb
+
+# IDE directories
+.idea/
+.vscode/
+*.code-workspace
+
+# Exclude all hidden files and directories except for .git and .gitignore
+.*
+!.gitignore
+!.git/
+
+# Ignore build directories (you can add more build directories if needed)
+build/
