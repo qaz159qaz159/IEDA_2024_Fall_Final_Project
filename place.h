@@ -10,11 +10,11 @@
 typedef struct {
 	uint16_t x;
 	uint16_t y;
-	char* name[MAX_NAME_LEN];
+	char name[MAX_NAME_LEN];
 } Pin;
 
 typedef struct {
-	char* name[MAX_NAME_LEN];
+	char name[MAX_NAME_LEN];
 	uint32_t x;
 	uint32_t y;
 } IO;
@@ -31,7 +31,7 @@ typedef IOs Inputs;
 typedef IOs Outputs;
 
 typedef struct {
-	char* name[MAX_NAME_LEN];
+	char name[MAX_NAME_LEN];
 	uint16_t bits;
 	uint16_t width;
 	uint16_t height;
@@ -40,7 +40,7 @@ typedef struct {
 } FF;
 
 typedef struct {
-	char* name[MAX_NAME_LEN];
+	char name[MAX_NAME_LEN];
 	uint16_t width;
 	uint16_t height;
 	uint16_t pin_count;
@@ -60,8 +60,8 @@ typedef struct {
 typedef struct {
 	uint32_t x;
 	uint32_t y;
-	char* inst_name[MAX_NAME_LEN];
-	char* lib_cell_name[MAX_NAME_LEN];
+	char inst_name[MAX_NAME_LEN];
+	char lib_cell_name[MAX_NAME_LEN];
 } Inst;
 
 typedef struct {
