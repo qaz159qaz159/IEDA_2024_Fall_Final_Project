@@ -127,63 +127,73 @@ int read_input(
     fscanf(file, "NumNets %u\n", &nets->count);
     // printf("NumNets %u\n", nets->count);
     for (uint64_t i = 0; i < nets->count; i++) {
+        fgets(line, sizeof(line), file);
         nets->items = realloc(nets->items, (i + 1) * sizeof(Net*));
         Net* net = malloc(sizeof(Net));
         nets->items[i] = net;
-        fscanf(file, "Net %s %u\n", &net->name, &net->pinCount);
+        sscanf(line, "Net %s %u\n", &net->name, &net->pinCount);
         // printf("Net %s %u\n", net->name, net->pinCount);
         net->pins = malloc(net->pinCount * sizeof(NetPin*));
         for (uint64_t j = 0; j < net->pinCount; j++) {
+            fgets(line, sizeof(line), file);
             NetPin* pin = malloc(sizeof(NetPin));
             net->pins[j] = pin;
-            fscanf(file, "Pin %9[^/]/%9s\n", &pin->instName, &pin->libPinName);
-            // printf("Pin %s/%s\n", pin->instName, pin->libPinName);
+            if (strchr(line, '/') != NULL) {
+                sscanf(file, "Pin %9[^/]/%9s\n", &pin->instName, &pin->libPinName);
+                // printf("Pin %s/%s\n", pin->instName, pin->libPinName);
+            }
+            else {
+                sscanf(line, "Pin %19s\n", &pin->instName);
+                // printf("Pin %s\n", pin->instName);
+            }
         }
     }
 
-    fscanf(file, "BinWidth %u", &bin->width);
-    fscanf(file, "BinHeight %u", &bin->height);
-    fscanf(file, "BinMaxUtil %lf", &bin->maxUtil);
-    printf("Bin %u %u %lf\n", bin->width, bin->height, bin->maxUtil);
+    fscanf(file, "BinWidth %u\n", &bin->width);
+    fscanf(file, "BinHeight %u\n", &bin->height);
+    fscanf(file, "BinMaxUtil %lf\n", &bin->maxUtil);
+    // printf("Bin %u %u %lf\n", bin->width, bin->height, bin->maxUtil);
 
-    // while (fgets(line, sizeof(line), file)) {
-    //     if (strncmp(line, "PlacementsRow", 13) == 0) {
-    //         placements_rows_set->count++;
-    //         placements_rows_set->items = realloc(placements_rows_set->items, placements_rows_set->count * sizeof(PlacementsRows));
-    //         PlacementsRows* row = &placements_rows_set->items[placements_rows_set->count - 1];
-    //         sscanf(line, "PlacementsRow %lf %lf %lf %lf %u", &row->start_x, &row->start_y, &row->width, &row->height, &row->totalNumOfSites);
-    //     } else break;
-    // }
+    while (fgets(line, sizeof(line), file)) {
+        if (strncmp(line, "PlacementRows", 13) == 0) {
+            placements_rows_set->count++;
+            placements_rows_set->items = realloc(placements_rows_set->items, placements_rows_set->count * sizeof(PlacementsRows*));
+            PlacementsRows* row = malloc(sizeof(PlacementsRows));
+            placements_rows_set->items[placements_rows_set->count - 1] = row;
+            sscanf(line, "PlacementsRow %u %u %u %u %u", &row->start_x, &row->start_y, &row->width, &row->height, &row->totalNumOfSites);
+            // printf("PlacementsRow %u %u %u %u %u\n", row->start_x, row->start_y, row->width, row->height, row->totalNumOfSites);
+        } else break;
+    }
     
-    // sscanf(line, "DisplacementDelay %f", &displacement_delay->coefficient);
+    sscanf(line, "DisplacementDelay %lf", &displacement_delay->coefficient);
+    // printf("DisplacementDelay %lf\n", displacement_delay->coefficient);
 
-    // while (fgets(line, sizeof(line), file)) {
-    //     if (strncmp(line, "QpinDelay", 9) == 0) {
-    //         qpin_delay->count++;
-    //         qpin_delay->items = realloc(qpin_delay->items, qpin_delay->count * sizeof(QpinDelay));
-    //         QpinDelay* qpin = &qpin_delay->items[qpin_delay->count - 1];
-    //         sscanf(line, "QpinDelay %s %f", qpin->libCellName, &qpin->delay);
-    //     } else break;
-    // }
+    while (fgets(line, sizeof(line), file)) {
+        if (strncmp(line, "QpinDelay", 9) == 0) {
+            qpin_delay->count++;
+            qpin_delay->items = realloc(qpin_delay->items, qpin_delay->count * sizeof(QpinDelay*));
+            QpinDelay* qpin = malloc(sizeof(QpinDelay));
+            qpin_delay->items[qpin_delay->count - 1] = qpin;
+            sscanf(line, "QpinDelay %s %lf", &qpin->libCellName, &qpin->delay);
+            // printf("QpinDelay %s %lf\n", qpin->libCellName, qpin->delay);
+        } else if (strncmp(line, "TimingSlack", 11) == 0) {
+            timing_slack->count++;
+            timing_slack->items = realloc(timing_slack->items, timing_slack->count * sizeof(TimingSlack*));
+            TimingSlack* slack = malloc(sizeof(TimingSlack));
+            timing_slack->items[timing_slack->count - 1] = slack;
+            sscanf(line, "TimingSlack %s %s %lf", &slack->instanceCellName, &slack->pinName, &slack->slack);
+            // printf("TimingSlack %s %s %lf\n", slack->instanceCellName, slack->pinName, slack->slack);
+        } else if (strncmp(line, "GatePower", 9) == 0) {
+            gate_power->count++;
+            gate_power->items = realloc(gate_power->items, gate_power->count * sizeof(GatePower*));
+            GatePower* power = malloc(sizeof(GatePower));
+            gate_power->items[gate_power->count - 1] = power;
+            sscanf(line, "GatePower %s %lf", &power->libCellName, &power->powerConsumption);
+            // printf("GatePower %s %lf\n", power->libCellName, power->powerConsumption);
+        } else break;
+    }
 
-    // while (fgets(line, sizeof(line), file)) {
-    //     if (strncmp(line, "TimingSlack", 11) == 0) {
-    //         timing_slack->count++;
-    //         timing_slack->items = realloc(timing_slack->items, timing_slack->count * sizeof(TimingSlack));
-    //         TimingSlack* slack = &timing_slack->items[timing_slack->count - 1];
-    //         sscanf(line, "TimingSlack %s %s %lf", slack->instanceCellName, slack->pinName, &slack->slack);
-    //     } else break;
-    // }
-
-    // while (fgets(line, sizeof(line), file)) {
-    //     if (strncmp(line, "GatePower", 9) == 0) {
-    //         gate_power->count++;
-    //         gate_power->items = realloc(gate_power->items, gate_power->count * sizeof(GatePower));
-    //         GatePower* power = &gate_power->items[gate_power->count - 1];
-    //         sscanf(line, "GatePower %s %lf", power->libCellName, &power->powerConsumption);
-    //     } else break;
-    // }
-    // printf("Read input successfully\n");
+    printf("Read input successfully\n");
     fclose(file);
     return 0;
 }

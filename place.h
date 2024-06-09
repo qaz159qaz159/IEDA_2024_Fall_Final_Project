@@ -7,9 +7,6 @@
 
 #define MAX_NAME_LEN 16
 
-#define TYPE_FF 	0x00
-#define TYPE_GATE 	0x01
-
 typedef struct {
 	uint16_t x;
 	uint16_t y;
@@ -34,24 +31,31 @@ typedef IOs Inputs;
 typedef IOs Outputs;
 
 typedef struct {
+	char* name[MAX_NAME_LEN];
 	uint16_t bits;
+	uint16_t width;
+	uint16_t height;
+	uint16_t pin_count;
+	Pin** pins;
+} FF;
+
+typedef struct {
 	char* name[MAX_NAME_LEN];
 	uint16_t width;
 	uint16_t height;
 	uint16_t pin_count;
 	Pin** pins;
-} Block;
-
-typedef Block FF;
-typedef Block Gate;
+} Gate;
 
 typedef struct {
 	uint32_t count;
-	Block** items;
-} Blocks;
+	FF** items;
+} FFs;
 
-typedef Blocks FFs;
-typedef Blocks Gates;
+typedef struct {
+	uint32_t count;
+	Gate** items;
+} Gates;
 
 typedef struct {
 	uint32_t x;
@@ -82,26 +86,26 @@ typedef struct {
 } Nets;
 
 typedef struct {
-	double start_x;
-	double start_y;
-	double width;
-	double height;
+	uint32_t start_x;
+	uint32_t start_y;
+	uint32_t width;
+	uint32_t height;
 	uint32_t totalNumOfSites;
 } PlacementsRows;
 
 typedef struct {
 	uint32_t count;
-	PlacementsRows* items;
+	PlacementsRows** items;
 } PlacementsRowsSet;
 
 typedef struct {
     char libCellName[MAX_NAME_LEN];
-    float delay;
+    double delay;
 } QpinDelay;
 
 typedef struct {
 	uint32_t count;
-	QpinDelay* items;
+	QpinDelay** items;
 } QpinDelays;
 
 typedef struct {
@@ -112,7 +116,7 @@ typedef struct {
 
 typedef struct {
 	uint32_t count;
-	TimingSlack* items;
+	TimingSlack** items;
 } TimingSlacks;
 
 typedef struct {
@@ -122,55 +126,19 @@ typedef struct {
 
 typedef struct {
 	uint32_t count;
-	GatePower* items;
+	GatePower** items;
 } GatePowers;
 
-
 typedef struct {
-    float coefficient;
+    double coefficient;
 } DisplacementDelay;
 
-
-
-
-
-
-
-
-
-/*	for example
- *	Inst C8784 G220 420750 926100
- *	->
- *	struct{
- *		x = 420750;
- *		y = 926100;
- *		type = type_GATE;
- *		type_id = 219 = 220-1;
- *	}
- *	and save at
- *
- * */
-
-
 typedef struct {
-	double x;
-	double y;
-} Placement;
-
-typedef struct{
-	uint32_t count;
-	Placement* items;
-} Placements;
-
-
-
-
-
-typedef struct {
-    uint32_t width, height; 
+    uint32_t width;
+	uint32_t height; 
 	double maxUtil;
 } Bin;
 
-int place_main(FF, Gate, Inst*, Pin* inputs, uint32_t inputLen, Pin* outputs, uint32_t outputLen, PlacementsRows*, double DisplacementDelay,  double* timeslack, uint32_t slack_len, double Alpha, double Lambda, double Die_st_x/* Die start x*/, double Die_st_y, double Die_width, double Die_height, Placements* rt/*return*/);
+int place_main(FF, Gate, Inst*, Pin* inputs, uint32_t inputLen, Pin* outputs, uint32_t outputLen, PlacementsRows*, double DisplacementDelay,  double* timeslack, uint32_t slack_len, double Alpha, double Lambda, double Die_st_x/* Die start x*/, double Die_st_y, double Die_width, double Die_height, PlacementsRowsSet* rt/*return*/);
 
 #endif // PLACE_H
