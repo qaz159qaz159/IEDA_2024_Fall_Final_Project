@@ -121,12 +121,10 @@ int read_input(
             NetPin* pin = (NetPin*)malloc(sizeof(NetPin));
             if (strchr(line, '/') != NULL) {
                 sscanf(line, "Pin %15[^/]/%15s\n", pin->instName, pin->libPinName);
-                printf("Pin %s/%s\n", pin->instName, pin->libPinName);
-                HASH_ADD_STR(net->map, instName, pin);
-            }
-            else {
-                sscanf(line, "Pin %19s\n", pin->instName);
-                pin->libPinName[0] = '\0';
+                // printf("Pin %s/%s\n", pin->instName, pin->libPinName);
+                // HASH_ADD_STR(net->map, instName, pin);
+            } else {
+                sscanf(line, "Pin %15s\n", pin->instName);
                 HASH_ADD_STR(net->map, instName, pin);
             }
         }
