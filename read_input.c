@@ -68,6 +68,7 @@ int read_input(
 
     fscanf(file, "NumOutput %u\n", num_outputs);
     outputs->count = *num_outputs;
+    outputs->map = NULL;
     for (int i = 0; i < *num_outputs; i++) {
         Output* output = malloc(sizeof(Output));
         fscanf(file, "Output %s %u %u\n", output->name, &output->x, &output->y);
@@ -80,6 +81,7 @@ int read_input(
             // Read FlipFlop block
             ff_blocks->count++;
             FF* ff = malloc(sizeof(FF));
+            ff->map = NULL;
             sscanf(line, "FlipFlop %hu %s %hu %hu %hu\n", &ff->bits, ff->name, &ff->width, &ff->height, &ff->pin_count);
             HASH_ADD_STR(ff_blocks->map, name, ff);
             for (uint64_t i = 0; i < ff->pin_count; i++) {
@@ -92,6 +94,7 @@ int read_input(
             // Read Gate block
             gate_blocks->count++;
             Gate* gate = malloc(sizeof(Gate));
+            gate->map = NULL;
             sscanf(line, "Gate %s %hu %hu %hu\n", gate->name, &gate->width, &gate->height, &gate->pin_count);
             HASH_ADD_STR(gate_blocks->map, name, gate);
             for (uint64_t i = 0; i < gate->pin_count; i++) {
@@ -104,6 +107,7 @@ int read_input(
     }
 
     sscanf(line, "NumInstances %u\n", &instances->count);
+    instances->map = NULL;
     for (uint64_t i = 0; i < instances->count; i++) {
         Inst* instance = malloc(sizeof(Inst));
         fscanf(file, "Inst %s %s %u %u\n", instance->inst_name, instance->lib_cell_name, &instance->x, &instance->y);
@@ -111,18 +115,19 @@ int read_input(
     }
     
     fscanf(file, "NumNets %u\n", &nets->count);
+    nets->map = NULL;
     for (uint64_t i = 0; i < nets->count; i++) {
         fgets(line, sizeof(line), file);
         Net* net = malloc(sizeof(Net));
+        net->map = NULL;
         sscanf(line, "Net %s %u\n", net->name, &net->pinCount);
         HASH_ADD_STR(nets->map, name, net);
         for (uint64_t j = 0; j < net->pinCount; j++) {
             fgets(line, sizeof(line), file);
             NetPin* pin = (NetPin*)malloc(sizeof(NetPin));
             if (strchr(line, '/') != NULL) {
-                sscanf(line, "Pin %15[^/]/%15s\n", pin->instName, pin->libPinName);
-                // printf("Pin %s/%s\n", pin->instName, pin->libPinName);
-                // HASH_ADD_STR(net->map, instName, pin);
+                sscanf(line, "Pin %15s\n", pin->instName);
+                HASH_ADD_STR(net->map, instName, pin);
             } else {
                 sscanf(line, "Pin %15s\n", pin->instName);
                 HASH_ADD_STR(net->map, instName, pin);
@@ -146,6 +151,12 @@ int read_input(
     
     sscanf(line, "DisplacementDelay %lf", &displacement_delay->coefficient);
 
+    qpin_delay->count = 0;
+    qpin_delay->map = NULL;
+    timing_slack->count = 0;
+    timing_slack->map = NULL;
+    gate_power->count = 0;
+    gate_power->map = NULL;
     while (fgets(line, sizeof(line), file)) {
         if (strncmp(line, "QpinDelay", 9) == 0) {
             qpin_delay->count++;
