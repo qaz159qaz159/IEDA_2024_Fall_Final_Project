@@ -1,4 +1,4 @@
-# MyProject
+# IEDA Final Project
 
 ## Overview
 
