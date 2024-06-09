@@ -6,6 +6,7 @@ project(IEDA_Final_Project)
 
 # Specify the C standard
 set(CMAKE_C_STANDARD 99)
+# set(CMAKE_C_FLAGS_DEBUG "-g")
 
 # Add the executable
 add_executable(IEDA_Final_Project main.c read_input.c place.c)

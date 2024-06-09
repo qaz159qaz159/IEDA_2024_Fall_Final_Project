@@ -4,19 +4,22 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "uthash.h"
 
 #define MAX_NAME_LEN 16
 
 typedef struct {
+	char name[MAX_NAME_LEN];
 	uint16_t x;
 	uint16_t y;
-	char name[MAX_NAME_LEN];
+	UT_hash_handle hh;
 } Pin;
 
 typedef struct {
 	char name[MAX_NAME_LEN];
 	uint32_t x;
 	uint32_t y;
+	UT_hash_handle hh;
 } IO;
 
 typedef IO Input;
@@ -24,7 +27,7 @@ typedef IO Output;
 
 typedef struct {
 	uint32_t count;
-	Input** items;
+	IO* map;
 } IOs;
 
 typedef IOs Inputs;
@@ -36,7 +39,8 @@ typedef struct {
 	uint16_t width;
 	uint16_t height;
 	uint16_t pin_count;
-	Pin** pins;
+	Pin* map;
+	UT_hash_handle hh;
 } FF;
 
 typedef struct {
@@ -44,45 +48,49 @@ typedef struct {
 	uint16_t width;
 	uint16_t height;
 	uint16_t pin_count;
-	Pin** pins;
+	Pin* map;
+	UT_hash_handle hh;
 } Gate;
 
 typedef struct {
 	uint32_t count;
-	FF** items;
+	FF* map;
 } FFs;
 
 typedef struct {
 	uint32_t count;
-	Gate** items;
+	Gate* map;
 } Gates;
 
 typedef struct {
-	uint32_t x;
-	uint32_t y;
 	char inst_name[MAX_NAME_LEN];
 	char lib_cell_name[MAX_NAME_LEN];
+	uint32_t x;
+	uint32_t y;
+	UT_hash_handle hh;
 } Inst;
 
 typedef struct {
 	uint32_t count;
-	Inst** items;
+	Inst* map;
 } Insts;
 
 typedef struct {
 	char instName[MAX_NAME_LEN];
 	char libPinName[MAX_NAME_LEN];
+	UT_hash_handle hh;
 } NetPin;
 
 typedef struct {
     char name[MAX_NAME_LEN];
     int pinCount;
-    NetPin** pins;
+	NetPin* map;
+	UT_hash_handle hh;
 } Net;
 
 typedef struct {
 	uint32_t count;
-	Net** items;
+	Net* map;
 } Nets;
 
 typedef struct {
@@ -101,32 +109,35 @@ typedef struct {
 typedef struct {
     char libCellName[MAX_NAME_LEN];
     double delay;
+	UT_hash_handle hh;
 } QpinDelay;
 
 typedef struct {
 	uint32_t count;
-	QpinDelay** items;
+	QpinDelay* map;
 } QpinDelays;
 
 typedef struct {
     char instanceCellName[MAX_NAME_LEN];
     char pinName[MAX_NAME_LEN];
     double slack;
+	UT_hash_handle hh;
 } TimingSlack;
 
 typedef struct {
 	uint32_t count;
-	TimingSlack** items;
+	TimingSlack* map;
 } TimingSlacks;
 
 typedef struct {
     char libCellName[MAX_NAME_LEN];
     double powerConsumption;
+	UT_hash_handle hh;
 } GatePower;
 
 typedef struct {
 	uint32_t count;
-	GatePower** items;
+	GatePower* map;
 } GatePowers;
 
 typedef struct {
