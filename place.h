@@ -63,12 +63,16 @@ typedef struct {
 	Gate* map;
 } Gates;
 
+#define USED 1
+#define NOT_USED 0
+
 typedef struct {
 	char inst_name[MAX_NAME_LEN];
 	char lib_cell_name[MAX_NAME_LEN];
 	uint32_t x;
 	uint32_t y;
 	UT_hash_handle hh;
+	uint8_t isUsed; // USED if used, UNUSED if not used
 } Inst;
 
 typedef struct {
@@ -152,12 +156,10 @@ typedef struct {
 } Bin;
 
 typedef struct {
-	uint32_t start_x;
-	uint32_t start_y;
-	uint32_t width;
-	uint32_t height;
-} Die;
+    char instName[MAX_NAME_LEN];
+    Net* net;
+} InstNetMapping;
 
-int place_main(FFs ffs, Gates gates, Inputs inputs, Outputs outputs, Insts insts, Nets nets, PlacementsRowsSet placementRowsSet, DisplacementDelay displacementDelay, Bin bin, Die die, double alpha, double lambda);
+int place_main(FF, Gate, Inst*, Pin* inputs, uint32_t inputLen, Pin* outputs, uint32_t outputLen, PlacementsRows*, double DisplacementDelay,  double* timeslack, uint32_t slack_len, double Alpha, double Lambda, double Die_st_x/* Die start x*/, double Die_st_y, double Die_width, double Die_height, PlacementsRowsSet* rt/*return*/);
 
 #endif // PLACE_H

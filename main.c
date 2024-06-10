@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "place.h"
+#include "utils.h"
 
 #define MAX_DISPLAY_LEN 10
 
@@ -40,6 +41,33 @@ int main(int argc, char* argv[]) {
     printf("Reading input...\n");
     // Assuming read_input is defined and works correctly
     read_input(filename, &alpha, &beta, &gamma, &lambda, &die_start_x, &die_start_y, &die_width, &die_height, &input_count, inputs, &output_count, outputs, ff_blocks, gate_blocks, instances, nets, bin, placements_rows_set, displacement_delay, qpin_delay, timing_slack, gate_power);
+
+    InstNetMapping* instNetMappings = malloc(sizeof(InstNetMapping));
+    size_t count = 0;
+    instNetMappings->net = NULL; 
+    instNetMappings = populate_inst_net_mapping(nets, &count);
+
+    // Example usage of find_net_by_inst_name
+    // Net* netFound = malloc(sizeof(Net));
+    // netFound = find_net_by_inst_name(instNetMappings, count, "C90606/IN4");
+    // printf("Net found for instance %s: %s\n", "C90606/IN4", netFound->name);
+
+    // Example usage of sort_ff_by_size
+    // printf("Before sorting:\n");
+    // FF* current_ff;
+    // FF* tmp;
+    // HASH_ITER(hh, ff_blocks->map, current_ff, tmp) {
+    //     printf("FF name: %s, size: %d\n", current_ff->name, current_ff->width * current_ff->height);
+    // }
+
+    sort_ff_by_size(ff_blocks);
+
+    // printf("After sorting:\n");
+    // HASH_ITER(hh, ff_blocks->map, current_ff, tmp) {
+    //     printf("FF name: %s, size: %d\n", current_ff->name, current_ff->width * current_ff->height);
+    // }
+
+
 
     // Free allocated memory
     return 0;
