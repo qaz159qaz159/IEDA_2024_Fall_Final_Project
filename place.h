@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "uthash.h"
 
 #define MAX_NAME_LEN 16
@@ -150,6 +151,13 @@ typedef struct {
 	double maxUtil;
 } Bin;
 
-int place_main(FF, Gate, Inst*, Pin* inputs, uint32_t inputLen, Pin* outputs, uint32_t outputLen, PlacementsRows*, double DisplacementDelay,  double* timeslack, uint32_t slack_len, double Alpha, double Lambda, double Die_st_x/* Die start x*/, double Die_st_y, double Die_width, double Die_height, PlacementsRowsSet* rt/*return*/);
+typedef struct {
+	uint32_t start_x;
+	uint32_t start_y;
+	uint32_t width;
+	uint32_t height;
+} Die;
+
+int place_main(FFs, Gates, Inputs, Outputs, Insts, Nets, PlacementsRowSet, TimingSlacks, DisplacementDelay, Bin);
 
 #endif // PLACE_H
