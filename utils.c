@@ -52,7 +52,6 @@ void sort_ff_by_size(FFs* ff_blocks) {
 // Function to find the Nets containing a specific Pin by instName
 Net* find_net_by_inst_name(InstNetMapping* mappings, size_t count, const char* instName) {
     for (size_t i = 0; i < 20; i++) {
-        printf("Instance name: %s\n", mappings[i].instName);
         if (strcmp(mappings[i].instName, instName) == 0) {
             return mappings[i].net;
         }
