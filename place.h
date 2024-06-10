@@ -83,8 +83,8 @@ typedef struct {
 } NetPin;
 
 typedef struct {
-    char name[MAX_NAME_LEN];
-    int pinCount;
+	char name[MAX_NAME_LEN];
+	int pinCount;
 	NetPin* map;
 	UT_hash_handle hh;
 } Net;
@@ -108,8 +108,8 @@ typedef struct {
 } PlacementsRowsSet;
 
 typedef struct {
-    char libCellName[MAX_NAME_LEN];
-    double delay;
+	char libCellName[MAX_NAME_LEN];
+	double delay;
 	UT_hash_handle hh;
 } QpinDelay;
 
@@ -119,9 +119,9 @@ typedef struct {
 } QpinDelays;
 
 typedef struct {
-    char instanceCellName[MAX_NAME_LEN];
-    char pinName[MAX_NAME_LEN];
-    double slack;
+	char instanceCellName[MAX_NAME_LEN];
+	char pinName[MAX_NAME_LEN];
+	double slack;
 	UT_hash_handle hh;
 } TimingSlack;
 
@@ -131,8 +131,8 @@ typedef struct {
 } TimingSlacks;
 
 typedef struct {
-    char libCellName[MAX_NAME_LEN];
-    double powerConsumption;
+	char libCellName[MAX_NAME_LEN];
+	double powerConsumption;
 	UT_hash_handle hh;
 } GatePower;
 
@@ -142,11 +142,11 @@ typedef struct {
 } GatePowers;
 
 typedef struct {
-    double coefficient;
+	double coefficient;
 } DisplacementDelay;
 
 typedef struct {
-    uint32_t width;
+	uint32_t width;
 	uint32_t height; 
 	double maxUtil;
 } Bin;
@@ -158,6 +158,6 @@ typedef struct {
 	uint32_t height;
 } Die;
 
-int place_main(FFs, Gates, Inputs, Outputs, Insts, Nets, PlacementsRowSet, TimingSlacks, DisplacementDelay, Bin);
+int place_main(FFs ffs, Gates gates, Inputs inputs, Outputs outputs, Insts insts, Nets nets, PlacementsRowsSet placementRowsSet, DisplacementDelay displacementDelay, Bin bin, Die die, double alpha, double lambda);
 
 #endif // PLACE_H
