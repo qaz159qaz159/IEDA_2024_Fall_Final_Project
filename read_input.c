@@ -14,10 +14,7 @@ int read_input(
     double*             beta, 
     double*             gamma, 
     double*             lambda, 
-    double*             die_lower_left_x, 
-    double*             die_lower_left_y, 
-    double*             die_upper_right_x, 
-    double*             die_upper_right_y,
+    Die*                die,
     // Input and Output
     int*                num_inputs,
     Inputs*             inputs,
@@ -55,7 +52,9 @@ int read_input(
     fscanf(file, "Beta %lf\n", beta);
     fscanf(file, "Gamma %lf\n", gamma);
     fscanf(file, "Lambda %lf\n", lambda);
-    fscanf(file, "DieSize %lf %lf %lf %lf\n", die_lower_left_x, die_lower_left_y, die_upper_right_x, die_upper_right_y);
+    fscanf(file, "DieSize %u %u %u %u\n", &die->lower_left_x, &die->lower_left_y, &die->upper_right_x, &die->upper_right_y);
+    die->height = die->upper_right_y - die->lower_left_y;
+    die->width = die->upper_right_x - die->lower_left_x;
 
     fscanf(file, "NumInput %u\n", num_inputs);
     inputs->count = *num_inputs;

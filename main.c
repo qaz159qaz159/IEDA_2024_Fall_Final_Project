@@ -13,7 +13,8 @@ int main(int argc, char* argv[]) {
 
     const char* filename = argv[1];
 
-    double alpha, beta, gamma, lambda, die_start_x, die_start_y, die_width, die_height;
+    double alpha, beta, gamma, lambda;
+    Die* die = malloc(sizeof(Die));
     // Input and Output
     int input_count, output_count;
     Inputs* inputs = malloc(sizeof(Inputs));
@@ -40,7 +41,7 @@ int main(int argc, char* argv[]) {
 
     printf("Reading input...\n");
     // Assuming read_input is defined and works correctly
-    read_input(filename, &alpha, &beta, &gamma, &lambda, &die_start_x, &die_start_y, &die_width, &die_height, &input_count, inputs, &output_count, outputs, ff_blocks, gate_blocks, instances, nets, bin, placements_rows_set, displacement_delay, qpin_delay, timing_slack, gate_power);
+    read_input(filename, &alpha, &beta, &gamma, &lambda, die, &input_count, inputs, &output_count, outputs, ff_blocks, gate_blocks, instances, nets, bin, placements_rows_set, displacement_delay, qpin_delay, timing_slack, gate_power);
 
     InstNetMapping* instNetMappings = malloc(sizeof(InstNetMapping));
     size_t count = 0;
@@ -67,6 +68,7 @@ int main(int argc, char* argv[]) {
     //     printf("FF name: %s, size: %d\n", current_ff->name, current_ff->width * current_ff->height);
     // }
 
+    place_main(*ff_blocks, gate_blocks, *inputs, *outputs, *instances, *nets, *placements_rows_set, *displacement_delay, *bin, alpha, lambda, die);
 
 
     // Free allocated memory
