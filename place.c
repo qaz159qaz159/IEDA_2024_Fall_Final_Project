@@ -42,6 +42,8 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 	char* strPin;
 	char strInst[MAX_NAME_LEN];
 	char strLibPin[MAX_NAME_LEN];
+	Output* cuOut;
+	Input* cuIn;
 
 	ffInstNames = malloc(sizeof(char*));
 	occupy = malloc(placementRowsSet.count*sizeof(uint8_t*));
@@ -115,11 +117,11 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							HASH_FIND_STR(insts.map, key, connectInst);
 							if(!connectInst) continue;
 							key = connectInst->lib_cell_name;
-							HASH_FIND_STR(ffs.map, key, value);
+							HASH_FIND_STR(ffs.map, key, curFFLib);
 							if(!value) continue;
 							connectFFLib = value;
 							key = strLibPin;
-							HASH_FIND_STR(connectFFLib->map, key, value);
+							HASH_FIND_STR(connectFFLib->map, key, curFFLib);
 							if(!value) continue;
 							connectPin = value;
 							if(axisCnt+1 > axisLen){
@@ -131,15 +133,15 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							if(MAX_NAME_LEN-(strPin-curNetPin->instName) >= 4){
 								if(!memcmp(strPin+1, "OUT", 3)){
 									key = strInst;
-									HASH_FIND_STR(insts.map, key, value);
+									HASH_FIND_STR(insts.map, key, curInst);
 									if(!value) continue;
 									connectInst = value;
 									key = connectInst->lib_cell_name;
-									HASH_FIND_STR(ffs.map, key, value);
+									HASH_FIND_STR(ffs.map, key, curInst);
 									if(!value) continue;
 									connectGateLib = value;
 									key = strLibPin;
-									HASH_FIND_STR(connectGateLib->map, key, value);
+									HASH_FIND_STR(connectGateLib->map, key, curGateLib);
 									if(!value) continue;
 									connectPin = value;
 									if(axisCnt+1 > axisLen){
@@ -153,7 +155,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					}else{
 						if(!memcmp(curNetPin->instName, "OUTPUT", 6)){
 							key = curNetPin->instName;
-							HASH_FIND_STR(outputs.map, key, value);
+							HASH_FIND_STR(outputs.map, key, cuOut);
 							if(!value) continue;
 							connectIO = value;
 							if(axisCnt+1 > axisLen){
@@ -176,15 +178,15 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							}
 							if(i >= j) continue;
 							key = strInst;
-							HASH_FIND_STR(insts.map, key, value);
+							HASH_FIND_STR(insts.map, key, curInst);
 							if(!value) continue;
 							connectInst = value;
 							key = connectInst->lib_cell_name;
-							HASH_FIND_STR(ffs.map, key, value);
+							HASH_FIND_STR(ffs.map, key, curFFLib);
 							if(!value) continue;
 							connectFFLib = value;
 							key = strLibPin;
-							HASH_FIND_STR(connectFFLib->map, key, value);
+							HASH_FIND_STR(connectFFLib->map, key, curFFLib);
 							if(!value) continue;
 							connectPin = value;
 							if(axisCnt+1 > axisLen){
@@ -196,15 +198,15 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							if(MAX_NAME_LEN-(strPin-curNetPin->instName) >= 3){
 								if(!memcmp(strPin+1, "IN", 2)){
 									key = strInst;
-									HASH_FIND_STR(insts.map, key, value);
+									HASH_FIND_STR(insts.map, key, curInst);
 									if(!value) continue;
 									connectInst = value;
 									key = connectInst->lib_cell_name;
-									HASH_FIND_STR(ffs.map, key, value);
+									HASH_FIND_STR(ffs.map, key, curFFLib);
 									if(!value) continue;
 									connectGateLib = value;
 									key = strLibPin;
-									HASH_FIND_STR(connectGateLib->map, key, value);
+									HASH_FIND_STR(connectGateLib->map, key, curGateLib);
 									if(!value) continue;
 									connectPin = value;
 									if(axisCnt+1 > axisLen){
@@ -218,7 +220,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					}else{
 						if(!memcmp(curNetPin->instName, "INPUT", 5)){
 							key = curNetPin->instName;
-							HASH_FIND_STR(outputs.map, key, value);
+							HASH_FIND_STR(outputs.map, key, cuOut);
 							if(!value) continue;
 							connectIO = value;
 							if(axisCnt+1 > axisLen){
@@ -241,7 +243,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 		for(curPin = curFFLib->map; curPin; curPin = curPin->hh.next){
 			key = curPin->name;
 			for(curNet = nets.map; curNet; curNet = curNet->hh.next){
-				HASH_FIND_STR(curNet->map, key, value);
+				HASH_FIND_STR(curNet->map, key, curNet);
 				if(value) break;
 			}
 			if(curPin->name[0] == 'D'){
@@ -252,19 +254,19 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 						strcpy(strLibPin, strPin);
 						if(!memcmp(strPin+1, "Q", 1)){
 							for(j = 0; j < i; j++){
-								if(!strcmp(strInst, ffInstName[j])) break;
+								if(!strcmp(strInst, ffInstNames[j])) break;
 							}
 							if(i >= j) continue;
 							key = strInst;
-							HASH_FIND_STR(insts.map, key, value);
+							HASH_FIND_STR(insts.map, key, curInst);
 							if(!value) continue;
 							connectInst = value;
 							key = connectInst->lib_cell_name;
-							HASH_FIND_STR(ffs.map, key, value);
+							HASH_FIND_STR(ffs.map, key, curFFLib);
 							if(!value) continue;
 							connectFFLib = value;
 							key = strLibPin;
-							HASH_FIND_STR(connectFFLib->map, key, value);
+							HASH_FIND_STR(connectFFLib->map, key, curFFLib);
 							if(!value) continue;
 							connectPin = value;
 							if(axisCnt+1 > axisLen){
@@ -276,15 +278,15 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							if(MAX_NAME_LEN-(strPin-curNetPin->instName) >= 4){
 								if(!memcmp(strPin+1, "OUT", 3)){
 									key = strInst;
-									HASH_FIND_STR(insts.map, key, value);
+									HASH_FIND_STR(insts.map, key, curInst);
 									if(!value) continue;
 									connectInst = value;
 									key = connectInst->lib_cell_name;
-									HASH_FIND_STR(ffs.map, key, value);
+									HASH_FIND_STR(ffs.map, key, curFFLib);
 									if(!value) continue;
 									connectGateLib = value;
 									key = strLibPin;
-									HASH_FIND_STR(connectGateLib->map, key, value);
+									HASH_FIND_STR(connectGateLib->map, key, curGateLib);
 									if(!value) continue;
 									connectPin = value;
 									if(axisCnt+1 > axisLen){
@@ -298,7 +300,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					}else{
 						if(!memcmp(curNetPin->instName, "OUTPUT", 6)){
 							key = curNetPin->instName;
-							HASH_FIND_STR(outputs.map, key, value);
+							HASH_FIND_STR(outputs.map, key, cuOut);
 							if(!value) continue;
 							connectIO = value;
 							if(axisCnt+1 > axisLen){
@@ -317,19 +319,19 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 						strcpy(strLibPin, strPin);
 						if(!memcmp(strPin+1, "D", 1)){
 							for(j = 0; j < i; j++){
-								if(!strcmp(strInst, ffInstName[j])) break;
+								if(!strcmp(strInst, ffInstNames[j])) break;
 							}
 							if(i >= j) continue;
 							key = strInst;
-							HASH_FIND_STR(insts.map, key, value);
+							HASH_FIND_STR(insts.map, key, curInst);
 							if(!value) continue;
 							connectInst = value;
 							key = connectInst->lib_cell_name;
-							HASH_FIND_STR(ffs.map, key, value);
+							HASH_FIND_STR(ffs.map, key, curFFLib);
 							if(!value) continue;
 							connectFFLib = value;
 							key = strLibPin;
-							HASH_FIND_STR(connectFFLib->map, key, value);
+							HASH_FIND_STR(connectFFLib->map, key, curFFLib);
 							if(!value) continue;
 							connectPin = value;
 							if(axisCnt+1 > axisLen){
@@ -341,15 +343,15 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							if(MAX_NAME_LEN-(strPin-curNetPin->instName) >= 3){
 								if(!memcmp(strPin+1, "IN", 2)){
 									key = strInst;
-									HASH_FIND_STR(insts.map, key, value);
+									HASH_FIND_STR(insts.map, key, curInst);
 									if(!value) continue;
 									connectInst = value;
 									key = connectInst->lib_cell_name;
-									HASH_FIND_STR(ffs.map, key, value);
+									HASH_FIND_STR(ffs.map, key, curFFLib);
 									if(!value) continue;
 									connectGateLib = value;
 									key = strLibPin;
-									HASH_FIND_STR(connectGateLib->map, key, value);
+									HASH_FIND_STR(connectGateLib->map, key, curGateLib);
 									if(!value) continue;
 									connectPin = value;
 									if(axisCnt+1 > axisLen){
@@ -363,7 +365,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					}else{
 						if(!memcmp(curNetPin->instName, "INPUT", 5)){
 							key = curNetPin->instName;
-							HASH_FIND_STR(outputs.map, key, value);
+							HASH_FIND_STR(outputs.map, key, cuOut);
 							if(!value) continue;
 							connectIO = value;
 							if(axisCnt+1 > axisLen){
