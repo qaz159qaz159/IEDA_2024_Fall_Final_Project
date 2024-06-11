@@ -1,6 +1,6 @@
 #include "place.h"
 
-int int32Cmp(void* a, void* b){
+int int32Cmp(const void* a, const void* b){
 	return (*(int32_t*)a)-(*(int32_t*)b);
 }
 
