@@ -4,7 +4,7 @@ int int32Cmp(void* a, void* b){
 	return (*(int32_t*)a)-(*(int32_t*)b);
 }
 
-int place_main(FFs ffs, Gates gates, Inputs inputs, Outputs outputs, Insts insts, Nets nets, PlacementsRowsSet placementRowsSet, DisplacementDelay displacementDelay, Bin bin, Die die, double alpha, double lambda){
+int place_main(FFs ffs, Gates gates, Inputs inputs, Outputs outputs, Insts insts, Nets nets, PlacementsRowsSet placementRowsSet, DisplacementDelay displacementDelay, Bin bin, double alpha, double lambda, double die_st_x, double die_st_y, double die_width, double die_height){
 	
 	void* iter;
 	Inst* curInst;
@@ -405,7 +405,7 @@ int place_main(FFs ffs, Gates gates, Inputs inputs, Outputs outputs, Insts insts
 		free(occupy[i]);
 	}
 	free(binArea);
-	free(ffInstCnt);
+	free(ffInstNames);
 	free(occupy);
 	return 0;
 }
