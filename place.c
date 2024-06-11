@@ -11,7 +11,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 	Inst* connectInst;
 	char* key;
 	void* value;
-	void* item[16];
+	void* item[1];
 	FF* curFFLib;
 	FF* connectFFLib;
 	Gate* curGateLib;
@@ -28,6 +28,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 	double slackDistF;
 	uint32_t slackDist;
 	uint32_t max;
+	uint32_t RowMax = 0;
 	uint8_t** occupy;
 	int64_t i, j, k;
 	uint32_t ffInstCnt =0;
@@ -39,6 +40,9 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 	uint32_t axisCnt, axisLen;
 	uint32_t curX;
 	uint32_t curY;
+	uint32_t curDist;
+	uint32_t curDistY;
+	uint8_t check;
 	char* strPin;
 	char strInst[MAX_NAME_LEN];
 	char strLibPin[MAX_NAME_LEN];
@@ -51,6 +55,9 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 
 	for(i = 0; i < placementRowsSet.count; i++){
 		occupy[i] = calloc((placementRowsSet.items[i]->totalNumOfSites+7)/8, sizeof(uint8_t));
+		if(RowMax < placementRowsSet.items[i]->totalNumOfSites){
+			RowMax = placementRowsSet.items[i]->totalNumOfSites;
+		}
 	}
 	for(curInst = insts.map; curInst; curInst = curInst->hh.next){
 		if(curInst->isUsed == NOT_USED) continue;
@@ -117,13 +124,11 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							HASH_FIND_STR(insts.map, key, connectInst);
 							if(!connectInst) continue;
 							key = connectInst->lib_cell_name;
-							HASH_FIND_STR(ffs.map, key, curFFLib);
-							if(!value) continue;
-							connectFFLib = value;
+							HASH_FIND_STR(ffs.map, key, connectFFLib);
+							if(!connectFFLib) continue;
 							key = strLibPin;
-							HASH_FIND_STR(connectFFLib->map, key, curFFLib);
-							if(!value) continue;
-							connectPin = value;
+							HASH_FIND_STR(connectFFLib->map, key, connectPin);
+							if(!connectPin) continue;
 							if(axisCnt+1 > axisLen){
 								axisLen *= 2;
 								axis = realloc(axis, axisLen*sizeof(int32_t));
@@ -133,17 +138,14 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							if(MAX_NAME_LEN-(strPin-curNetPin->instName) >= 4){
 								if(!memcmp(strPin+1, "OUT", 3)){
 									key = strInst;
-									HASH_FIND_STR(insts.map, key, curInst);
-									if(!value) continue;
-									connectInst = value;
+									HASH_FIND_STR(insts.map, key, connectInst);
+									if(!connectInst) continue;
 									key = connectInst->lib_cell_name;
-									HASH_FIND_STR(ffs.map, key, curInst);
-									if(!value) continue;
-									connectGateLib = value;
+									HASH_FIND_STR(ffs.map, key, connectGateLib);
+									if(!connectGateLib) continue;
 									key = strLibPin;
-									HASH_FIND_STR(connectGateLib->map, key, curGateLib);
-									if(!value) continue;
-									connectPin = value;
+									HASH_FIND_STR(connectGateLib->map, key, connectPin);
+									if(!connectPin) continue;
 									if(axisCnt+1 > axisLen){
 										axisLen *= 2;
 										axis = realloc(axis, axisLen*sizeof(int32_t));
@@ -155,9 +157,8 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					}else{
 						if(!memcmp(curNetPin->instName, "OUTPUT", 6)){
 							key = curNetPin->instName;
-							HASH_FIND_STR(outputs.map, key, cuOut);
-							if(!value) continue;
-							connectIO = value;
+							HASH_FIND_STR(outputs.map, key, connectIO);
+							if(!connectIO) continue;
 							if(axisCnt+1 > axisLen){
 								axisLen *= 2;
 								axis = realloc(axis, axisLen*sizeof(int32_t));
@@ -179,16 +180,10 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							if(i >= j) continue;
 							key = strInst;
 							HASH_FIND_STR(insts.map, key, curInst);
-							if(!value) continue;
-							connectInst = value;
 							key = connectInst->lib_cell_name;
 							HASH_FIND_STR(ffs.map, key, curFFLib);
-							if(!value) continue;
-							connectFFLib = value;
 							key = strLibPin;
 							HASH_FIND_STR(connectFFLib->map, key, curFFLib);
-							if(!value) continue;
-							connectPin = value;
 							if(axisCnt+1 > axisLen){
 								axisLen *= 2;
 								axis = realloc(axis, axisLen*sizeof(int32_t));
@@ -278,17 +273,14 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							if(MAX_NAME_LEN-(strPin-curNetPin->instName) >= 4){
 								if(!memcmp(strPin+1, "OUT", 3)){
 									key = strInst;
-									HASH_FIND_STR(insts.map, key, curInst);
-									if(!value) continue;
-									connectInst = value;
+									HASH_FIND_STR(insts.map, key, connectInst);
+									if(!connectInst) continue;
 									key = connectInst->lib_cell_name;
-									HASH_FIND_STR(ffs.map, key, curFFLib);
-									if(!value) continue;
-									connectGateLib = value;
+									HASH_FIND_STR(ffs.map, key, connectGateLib);
+									if(!connectGateLib) continue;
 									key = strLibPin;
-									HASH_FIND_STR(connectGateLib->map, key, curGateLib);
-									if(!value) continue;
-									connectPin = value;
+									HASH_FIND_STR(connectGateLib->map, key, connectPin);
+									if(!connectPin) continue;
 									if(axisCnt+1 > axisLen){
 										axisLen *= 2;
 										axis = realloc(axis, axisLen*sizeof(int32_t));
@@ -300,9 +292,8 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					}else{
 						if(!memcmp(curNetPin->instName, "OUTPUT", 6)){
 							key = curNetPin->instName;
-							HASH_FIND_STR(outputs.map, key, cuOut);
-							if(!value) continue;
-							connectIO = value;
+							HASH_FIND_STR(outputs.map, key, connectIO);
+							if(!connectIO) continue;
 							if(axisCnt+1 > axisLen){
 								axisLen *= 2;
 								axis = realloc(axis, axisLen*sizeof(int32_t));
@@ -323,17 +314,14 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							}
 							if(i >= j) continue;
 							key = strInst;
-							HASH_FIND_STR(insts.map, key, curInst);
-							if(!value) continue;
-							connectInst = value;
+							HASH_FIND_STR(insts.map, key, connectInst);
+							if(!connectInst) continue;
 							key = connectInst->lib_cell_name;
-							HASH_FIND_STR(ffs.map, key, curFFLib);
-							if(!value) continue;
-							connectFFLib = value;
+							HASH_FIND_STR(ffs.map, key, connectFFLib);
+							if(!connectFFLib) continue;
 							key = strLibPin;
-							HASH_FIND_STR(connectFFLib->map, key, curFFLib);
-							if(!value) continue;
-							connectPin = value;
+							HASH_FIND_STR(connectFFLib->map, key, connectPin);
+							if(!connectPin) continue;
 							if(axisCnt+1 > axisLen){
 								axisLen *= 2;
 								axis = realloc(axis, axisLen*sizeof(int32_t));
@@ -343,17 +331,14 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							if(MAX_NAME_LEN-(strPin-curNetPin->instName) >= 3){
 								if(!memcmp(strPin+1, "IN", 2)){
 									key = strInst;
-									HASH_FIND_STR(insts.map, key, curInst);
-									if(!value) continue;
-									connectInst = value;
+									HASH_FIND_STR(insts.map, key, connectInst);
+									if(!connectInst) continue;
 									key = connectInst->lib_cell_name;
-									HASH_FIND_STR(ffs.map, key, curFFLib);
-									if(!value) continue;
-									connectGateLib = value;
+									HASH_FIND_STR(ffs.map, key, connectGateLib);
+									if(!connectGateLib) continue;
 									key = strLibPin;
-									HASH_FIND_STR(connectGateLib->map, key, curGateLib);
-									if(!value) continue;
-									connectPin = value;
+									HASH_FIND_STR(connectGateLib->map, key, connectPin);
+									if(!connectPin) continue;
 									if(axisCnt+1 > axisLen){
 										axisLen *= 2;
 										axis = realloc(axis, axisLen*sizeof(int32_t));
@@ -365,9 +350,8 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					}else{
 						if(!memcmp(curNetPin->instName, "INPUT", 5)){
 							key = curNetPin->instName;
-							HASH_FIND_STR(outputs.map, key, cuOut);
-							if(!value) continue;
-							connectIO = value;
+							HASH_FIND_STR(outputs.map, key, connectIO);
+							if(!connectIO) continue;
 							if(axisCnt+1 > axisLen){
 								axisLen *= 2;
 								axis = realloc(axis, axisLen*sizeof(int32_t));
@@ -384,19 +368,166 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 		}else{
 			curY = axis[axisCnt/2]+axis[axisCnt/2-1];
 		}
-		curInst->x = curX;
-		curInst->y = curY;
-		for(i = 0; i < placementRowsSet.count; i++){
-			if(placementRowsSet.items[i]->start_y < curInst->y) continue;
-			if(placementRowsSet.items[i]->start_y > curFFLib->height-1+curInst->y) break;
-			curRows = placementRowsSet.items[i];
-			for(
-					j = (curInst->x-curRows->start_x)/curRows->width;
-					j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width;
-					j++
-					){
-				occupy[i][j/8] |= 0x01<<(j%8);
+		for(curDist = 0, curDistY = 0; curDist < RowMax; curDist++){
+			for(curDistY = 0; curDistY < curDist; curDistY++){
+				check = 0;
+				for(i = curDistY; i < placementRowsSet.count; i++){
+					if(placementRowsSet.items[i-curDistY]->start_y < curY) continue;
+					if(placementRowsSet.items[i-curDistY]->start_y > curFFLib->height-1+curY) break;
+					curRows = placementRowsSet.items[i];
+					if(placementRowsSet.items[i-curDistY]->totalNumOfSites < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY)){
+						check = 1;
+					}else{
+						for(
+								j = (curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY);
+								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY);
+								j++
+								){
+							if(occupy[i][j/8]&(0x01<<(j%8))){
+								check = 1;
+								break;
+							}
+						}
+					}
+					if(check) break;
+				}
+				if(!check){
+					for(i = curDistY; i < placementRowsSet.count; i++){
+						if(placementRowsSet.items[i-curDistY]->start_y < curY) continue;
+						if(placementRowsSet.items[i-curDistY]->start_y > curFFLib->height-1+curY) break;
+						curRows = placementRowsSet.items[i];
+						for(
+								j = (curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY);
+								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY);
+								j++
+								){
+							occupy[i][j/8] |= 0x01<<(j%8);
+						}
+					}
+					break;
+				}
+				check = 0;
+				for(i = curDistY; i < placementRowsSet.count; i++){
+					if(placementRowsSet.items[i-curDistY]->start_y < curY) continue;
+					if(placementRowsSet.items[i-curDistY]->start_y > curFFLib->height-1+curY) break;
+					curRows = placementRowsSet.items[i];
+					if((curInst->x-curRows->start_x)/curRows->width < (curDist-curDistY)){
+						check = 1;
+					}else{
+						for(
+								j = (curInst->x-curRows->start_x)/curRows->width - (curDist-curDistY);
+								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width - (curDist-curDistY);
+								j++
+								){
+							if(occupy[i][j/8]&(0x01<<(j%8))){
+								check = 1;
+								break;
+							}
+						}
+					}
+					if(check) break;
+				}
+				if(!check){
+					for(i = curDistY; i < placementRowsSet.count; i++){
+						if(placementRowsSet.items[i-curDistY]->start_y < curY) continue;
+						if(placementRowsSet.items[i-curDistY]->start_y > curFFLib->height-1+curY) break;
+						curRows = placementRowsSet.items[i];
+						for(
+								j = (curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY);
+								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY);
+								j++
+								){
+							occupy[i][j/8] |= 0x01<<(j%8);
+						}
+					}
+					break;
+				}
 			}
+			for(curDistY = 0; curDistY < curDist; curDistY++){
+				check = 0;
+				for(i = 0; i < placementRowsSet.count-curDistY; i++){
+					if(placementRowsSet.items[i+curDistY]->start_y < curY) continue;
+					if(placementRowsSet.items[i+curDistY]->start_y > curFFLib->height-1+curY) break;
+					curRows = placementRowsSet.items[i];
+					if(placementRowsSet.items[i+curDistY]->totalNumOfSites < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY)){
+						check = 1;
+					}else{
+						for(
+								j = (curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY);
+								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY);
+								j++
+								){
+							if(occupy[i][j/8]&(0x01<<(j%8))){
+								check = 1;
+								break;
+							}
+						}
+					}
+					if(check) break;
+				}
+				if(!check){
+					for(i = 0; i < placementRowsSet.count-curDistY; i++){
+						if(placementRowsSet.items[i+curDistY]->start_y < curY) continue;
+						if(placementRowsSet.items[i+curDistY]->start_y > curFFLib->height-1+curY) break;
+						curRows = placementRowsSet.items[i];
+						for(
+								j = (curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY);
+								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY);
+								j++
+								){
+							occupy[i][j/8] |= 0x01<<(j%8);
+						}
+					}
+					break;
+				}
+				check = 0;
+				for(i = 0; i < placementRowsSet.count-curDistY; i++){
+					if(placementRowsSet.items[i+curDistY]->start_y < curY) continue;
+					if(placementRowsSet.items[i+curDistY]->start_y > curFFLib->height-1+curY) break;
+					curRows = placementRowsSet.items[i];
+					if((curInst->x-curRows->start_x)/curRows->width < (curDist-curDistY)){
+						check = 1;
+					}else{
+						for(
+								j = (curInst->x-curRows->start_x)/curRows->width - (curDist-curDistY);
+								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width - (curDist-curDistY);
+								j++
+								){
+							if(occupy[i][j/8]&(0x01<<(j%8))){
+								check = 1;
+								break;
+							}
+						}
+					}
+					if(check) break;
+				}
+				if(!check){
+					for(i = 0; i < placementRowsSet.count-curDistY; i++){
+						if(placementRowsSet.items[i+curDistY]->start_y < curY) continue;
+						if(placementRowsSet.items[i+curDistY]->start_y > curFFLib->height-1+curY) break;
+						curRows = placementRowsSet.items[i];
+						for(
+								j = (curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY);
+								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY);
+								j++
+								){
+							occupy[i][j/8] |= 0x01<<(j%8);
+						}
+					}
+					break;
+				}
+			}
+			if(!check) break;
+		}
+		if(check){
+			free(axis);
+			for(i = 0; i < placementRowsSet.count; i++){
+				free(occupy[i]);
+			}
+			free(binArea);
+			free(ffInstNames);
+			free(occupy);
+			return -1;// no valid solution
 		}
 	}
 	free(axis);
