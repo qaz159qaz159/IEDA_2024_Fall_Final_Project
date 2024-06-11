@@ -374,7 +374,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 				for(i = curDistY; i < placementRowsSet.count; i++){
 					if(placementRowsSet.items[i-curDistY]->start_y < curY) continue;
 					if(placementRowsSet.items[i-curDistY]->start_y > curFFLib->height-1+curY) break;
-					curRows = placementRowsSet.items[i];
+					curRows = placementRowsSet.items[i-curDistY];
 					if(placementRowsSet.items[i-curDistY]->totalNumOfSites < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY)){
 						check = 1;
 					}else{
@@ -395,7 +395,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					for(i = curDistY; i < placementRowsSet.count; i++){
 						if(placementRowsSet.items[i-curDistY]->start_y < curY) continue;
 						if(placementRowsSet.items[i-curDistY]->start_y > curFFLib->height-1+curY) break;
-						curRows = placementRowsSet.items[i];
+						curRows = placementRowsSet.items[i-curDistY];
 						for(
 								j = (curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY);
 								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY);
@@ -404,13 +404,20 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							occupy[i][j/8] |= 0x01<<(j%8);
 						}
 					}
+					for(i = curDistY; i < placementRowsSet.count; i++){
+						if(placementRowsSet.items[i-curDistY]->start_y < curY) continue;
+						curRows = placementRowsSet.items[i-curDistY];
+						curInst->y = curRows->start_y;
+						curInst->x = ((curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY))*curRows->width;
+						break;
+					}
 					break;
 				}
 				check = 0;
 				for(i = curDistY; i < placementRowsSet.count; i++){
 					if(placementRowsSet.items[i-curDistY]->start_y < curY) continue;
 					if(placementRowsSet.items[i-curDistY]->start_y > curFFLib->height-1+curY) break;
-					curRows = placementRowsSet.items[i];
+					curRows = placementRowsSet.items[i-curDistY];
 					if((curInst->x-curRows->start_x)/curRows->width < (curDist-curDistY)){
 						check = 1;
 					}else{
@@ -431,14 +438,21 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					for(i = curDistY; i < placementRowsSet.count; i++){
 						if(placementRowsSet.items[i-curDistY]->start_y < curY) continue;
 						if(placementRowsSet.items[i-curDistY]->start_y > curFFLib->height-1+curY) break;
-						curRows = placementRowsSet.items[i];
+						curRows = placementRowsSet.items[i-curDistY];
 						for(
-								j = (curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY);
-								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY);
+								j = (curInst->x-curRows->start_x)/curRows->width - (curDist-curDistY);
+								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width - (curDist-curDistY);
 								j++
 								){
 							occupy[i][j/8] |= 0x01<<(j%8);
 						}
+					}
+					for(i = curDistY; i < placementRowsSet.count; i++){
+						if(placementRowsSet.items[i-curDistY]->start_y < curY) continue;
+						curRows = placementRowsSet.items[i-curDistY];
+						curInst->y = curRows->start_y;
+						curInst->x = ((curInst->x-curRows->start_x)/curRows->width - (curDist-curDistY))*curRows->width;
+						break;
 					}
 					break;
 				}
@@ -448,7 +462,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 				for(i = 0; i < placementRowsSet.count-curDistY; i++){
 					if(placementRowsSet.items[i+curDistY]->start_y < curY) continue;
 					if(placementRowsSet.items[i+curDistY]->start_y > curFFLib->height-1+curY) break;
-					curRows = placementRowsSet.items[i];
+					curRows = placementRowsSet.items[i+curDistY];
 					if(placementRowsSet.items[i+curDistY]->totalNumOfSites < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY)){
 						check = 1;
 					}else{
@@ -469,7 +483,7 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					for(i = 0; i < placementRowsSet.count-curDistY; i++){
 						if(placementRowsSet.items[i+curDistY]->start_y < curY) continue;
 						if(placementRowsSet.items[i+curDistY]->start_y > curFFLib->height-1+curY) break;
-						curRows = placementRowsSet.items[i];
+						curRows = placementRowsSet.items[i+curDistY];
 						for(
 								j = (curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY);
 								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY);
@@ -478,13 +492,20 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 							occupy[i][j/8] |= 0x01<<(j%8);
 						}
 					}
+					for(i = 0; i < placementRowsSet.count-curDistY; i++){
+						if(placementRowsSet.items[i+curDistY]->start_y < curY) continue;
+						curRows = placementRowsSet.items[i+curDistY];
+						curInst->y = curRows->start_y;
+						curInst->x = ((curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY))*curRows->width;
+						break;
+					}
 					break;
 				}
 				check = 0;
 				for(i = 0; i < placementRowsSet.count-curDistY; i++){
 					if(placementRowsSet.items[i+curDistY]->start_y < curY) continue;
 					if(placementRowsSet.items[i+curDistY]->start_y > curFFLib->height-1+curY) break;
-					curRows = placementRowsSet.items[i];
+					curRows = placementRowsSet.items[i+curDistY];
 					if((curInst->x-curRows->start_x)/curRows->width < (curDist-curDistY)){
 						check = 1;
 					}else{
@@ -505,14 +526,21 @@ int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts inst
 					for(i = 0; i < placementRowsSet.count-curDistY; i++){
 						if(placementRowsSet.items[i+curDistY]->start_y < curY) continue;
 						if(placementRowsSet.items[i+curDistY]->start_y > curFFLib->height-1+curY) break;
-						curRows = placementRowsSet.items[i];
+						curRows = placementRowsSet.items[i+curDistY];
 						for(
-								j = (curInst->x-curRows->start_x)/curRows->width + (curDist-curDistY);
-								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width + (curDist-curDistY);
+								j = (curInst->x-curRows->start_x)/curRows->width - (curDist-curDistY);
+								j < (curInst->x-curRows->start_x+curFFLib->height-1)/curRows->width - (curDist-curDistY);
 								j++
 								){
 							occupy[i][j/8] |= 0x01<<(j%8);
 						}
+					}
+					for(i = 0; i < placementRowsSet.count-curDistY; i++){
+						if(placementRowsSet.items[i+curDistY]->start_y < curY) continue;
+						curRows = placementRowsSet.items[i+curDistY];
+						curInst->y = curRows->start_y;
+						curInst->x = ((curInst->x-curRows->start_x)/curRows->width - (curDist-curDistY))*curRows->width;
+						break;
 					}
 					break;
 				}
