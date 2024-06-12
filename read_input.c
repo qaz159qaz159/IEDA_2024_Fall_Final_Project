@@ -71,17 +71,20 @@ int read_input(
     outputs->map = NULL;
     for (int i = 0; i < *num_outputs; i++) {
         Output* output = malloc(sizeof(Output));
-        fscanf(file, "Output %s %u %u\n", output->name, &output->x, &output->y);
+        fscanf(file, "Output %s %hu %hu\n", output->name, &output->x, &output->y);
         HASH_ADD_STR(outputs->map, name, output);
     }
 
     char line[MAX_LINE_LEN];
+    ff_blocks->count = 0;
+    ff_blocks->map = NULL;
+    gate_blocks->count = 0;
+    gate_blocks->map = NULL;
     while (fgets(line, sizeof(line), file)) {
         if (strncmp(line, "FlipFlop", 8) == 0) {
             // Read FlipFlop block
             ff_blocks->count++;
             FF* ff = malloc(sizeof(FF));
-            ff->map = NULL;
             sscanf(line, "FlipFlop %hu %s %hu %hu %hu\n", &ff->bits, ff->name, &ff->width, &ff->height, &ff->pin_count);
             HASH_ADD_STR(ff_blocks->map, name, ff);
             for (uint64_t i = 0; i < ff->pin_count; i++) {

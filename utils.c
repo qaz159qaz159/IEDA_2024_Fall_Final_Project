@@ -146,30 +146,30 @@ Inst** extract_ff_insts_with_n_bits(Insts* insts, FFs* ff_lib, uint16_t n_bits, 
 
 
 // iterate through all ff lib cells and calculate their corresponding innate cost (the cost regarding area and power)
-void calculate_FF_innate_cost(FFs* ff_lib, GatePowers* powers, const double beta, const double gamma) {
-    FF* current_ff = NULL;
-    GatePower* current_ff_power = NULL;
-    for(current_ff = ff_lib->map; current_ff; current_ff = current_ff->hh.next) {
-        HASH_FIND_STR(powers->map, current_ff->name, current_ff_power);
-        current_ff->innate_cost = beta * current_ff_power->powerConsumption + gamma * current_ff->width * current_ff->height;
-    }
-}
-
-// compare ff lib cells according to their innate cost
-int compare_ff_innate_cost(const void *a, const void *b) {
-      FF* c = *(FF**)a;
-      FF* d = *(FF**)b;
-      return c->innate_cost - d->innate_cost;
-}
-
-// sort ff lib by innate cost (low to high)
-void sort_ff_by_innate_cost(FFs* ff_lib) {
-    size_t count;
-    FF** ff_array = extract_ff_array(ff_lib, &count);
-
-    qsort(ff_array, count, sizeof(FF*), compare_ff_innate_cost);
-
-    replace_ff_map(ff_lib, ff_array, count);
-
-    free(ff_array);
-}
+//void calculate_FF_innate_cost(FFs* ff_lib, GatePowers* powers, const double beta, const double gamma) {
+//    FF* current_ff = NULL;
+//    GatePower* current_ff_power = NULL;
+//    for(current_ff = ff_lib->map; current_ff; current_ff = current_ff->hh.next) {
+//        HASH_FIND_STR(powers->map, current_ff->name, current_ff_power);
+//        current_ff->innate_cost = beta * current_ff_power->powerConsumption + gamma * current_ff->width * current_ff->height;
+//    }
+//}
+//
+//// compare ff lib cells according to their innate cost
+//int compare_ff_innate_cost(const void *a, const void *b) {
+//      FF* c = *(FF**)a;
+//      FF* d = *(FF**)b;
+//      return c->innate_cost - d->innate_cost;
+//}
+//
+//// sort ff lib by innate cost (low to high)
+//void sort_ff_by_innate_cost(FFs* ff_lib) {
+//    size_t count;
+//    FF** ff_array = extract_ff_array(ff_lib, &count);
+//
+//    qsort(ff_array, count, sizeof(FF*), compare_ff_innate_cost);
+//
+//    replace_ff_map(ff_lib, ff_array, count);
+//
+//    free(ff_array);
+//}
