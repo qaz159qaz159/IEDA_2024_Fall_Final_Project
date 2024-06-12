@@ -94,3 +94,52 @@ InstNetMapping* populate_inst_net_mapping(Nets* nets, size_t* count) {
 
     return mappings;
 }
+
+// Return an array of n-bit-FF library cells
+FF** extract_ff_lib_with_n_bits(FFs* ff_lib, uint16_t n_bits, size_t* count) {
+    size_t i = 0;
+    FF* current_ff = NULL;
+
+    // iterate through all ff lib cells to find the number of n-bit-FF lib cells
+    for(current_ff = ff_lib->map; current_ff; current_ff = current_ff->hh.next) {
+        if(current_ff->bits == n_bits) i++;
+    }
+    *count = i;
+    FF** array = (FF**)malloc(i * sizeof(FF*));
+    // iterate again and add FFs with n bits to the array
+    i = 0;
+    for(current_ff = ff_lib->map; current_ff; current_ff = current_ff->hh.next) {
+        if(current_ff->bits == n_bits) {
+            array[i] = current_ff;
+            i++;
+        }
+    }
+    return array;
+}
+
+// Return an array of used/unused n-bit-FF instances
+Inst** extract_ff_insts_with_n_bits(Insts* insts, FFs* ff_lib, uint16_t n_bits, uint8_t used, size_t* count) {
+    size_t i = 0;
+    FF* current_ff_lib = NULL;
+    Inst* current_inst = NULL;
+
+    // iterate through all FF instances to find the number of n-bit-FF instances
+    for(current_inst = insts->map; current_inst; current_inst = current_inst->hh.next) {
+        HASH_FIND_STR(ff_lib->map, current_inst->lib_cell_name, current_ff_lib);
+        if (!current_ff_lib) continue;
+        if((current_inst->isUsed == used) && (current_ff_lib->bits == n_bits)) i++;
+    }
+    *count = i;
+    Inst** array = (Inst**)malloc(i * sizeof(Inst*));
+    i = 0;
+    // iterate again and add to the array
+    for(current_inst = insts->map; current_inst; current_inst = current_inst->hh.next) {
+        HASH_FIND_STR(ff_lib->map, current_inst->lib_cell_name, current_ff_lib);
+        if (!current_ff_lib) continue;
+        if((current_inst->isUsed == used) && (current_ff_lib->bits == n_bits)) {
+            array[i] = current_inst;
+            i++;
+        }
+    }
+    return array;
+}
