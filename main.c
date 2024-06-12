@@ -51,6 +51,9 @@ int main(int argc, char* argv[]) {
     // Assuming read_input is defined and works correctly
     read_input(filename, &alpha, &beta, &gamma, &lambda, die, &input_count, inputs, &output_count, outputs, ff_blocks, gate_blocks, instances, nets, bin, placements_rows_set, displacement_delay, qpin_delay, timing_slack, gate_power);
 
+    double initial_score = calculate_score(ff_blocks, gate_blocks, instances, timing_slack, gate_power, qpin_delay, displacement_delay, alpha, beta, gamma, lambda, bin);
+    printf("Score: %lf\n", initial_score);
+
     InstNetMapping* instNetMappings = malloc(sizeof(InstNetMapping));
     size_t count = 0;
     instNetMappings->net = NULL; 
@@ -76,8 +79,38 @@ int main(int argc, char* argv[]) {
     //     printf("FF name: %s, size: %d\n", current_ff->name, current_ff->width * current_ff->height);
     // }
 
-    bank_flip_flops(instances, nets, ff_blocks, used_insts, new_insts);
+    for (int i = 0; i < 2; i++) {
+        bank_flip_flops(instances, nets, ff_blocks);
+        if (check_placement(instances, die) == 1) {
+            printf("Placement is valid\n");
+        } else {
+            printf("Placement is invalid\n");
+        }
 
+        if (check_overlap(instances, new_insts, placements_rows_set) == 1) {
+            printf("Overlap is valid\n");
+        } else {
+            printf("Overlap is invalid\n");
+        }
+        double score = calculate_score(ff_blocks, gate_blocks, instances, timing_slack, gate_power, qpin_delay, displacement_delay, alpha, beta, gamma, lambda, bin);
+        printf("In iteration %d, score: %lf, reduced percentage: %lf\n", i, score, (initial_score - score) / initial_score * 100);
+
+        Inst* tmp;
+        HASH_ITER(hh, instances->map, tmp, instances->map) {
+            printf("Instance name: %s, x: %d, y: %d\n", tmp->inst_name, tmp->x, tmp->y);
+        }
+
+        Net* tmp_net;
+        HASH_ITER(hh, nets->map, tmp_net, nets->map) {
+            printf("Net name: %s\n", tmp_net->name);
+        }
+
+
+    }
+
+    double final_score = calculate_score(ff_blocks, gate_blocks, instances, timing_slack, gate_power, qpin_delay, displacement_delay, alpha, beta, gamma, lambda, bin);
+    printf("Score: %lf\n", final_score);
+    printf("Reduced Percentage: %lf\n", (initial_score - final_score) / initial_score * 100);
     // place_main(*ff_blocks, gate_blocks, *inputs, *outputs, *instances, *nets, *placements_rows_set, *displacement_delay, *bin, alpha, lambda, die);
 
 

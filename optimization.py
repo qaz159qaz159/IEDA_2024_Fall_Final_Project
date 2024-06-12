@@ -410,6 +410,8 @@ class Optimization():
     def optimization(self):
         self.read_input("testcase1.txt")
         
+        
+        
         self.ffCellLib.build_ff_cell_lib(self.ffs.ffs)
         print(self.find_CLK_FF_nets_with_more_than_2_pins())
 
