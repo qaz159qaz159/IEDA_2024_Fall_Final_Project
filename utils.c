@@ -44,6 +44,10 @@ void sort_ff_by_size(FFs* ff_blocks) {
 
     qsort(ff_array, count, sizeof(FF*), compare_ff);
 
+    for (size_t i = 0; i < count; i++) {
+        if (ff_array[i]->bits == 2) printf("FF name: %s, size: %d\n", ff_array[i]->name, ff_array[i]->width * ff_array[i]->height);
+    }
+
     replace_ff_map(ff_blocks, ff_array, count);
 
     free(ff_array);

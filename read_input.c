@@ -71,7 +71,7 @@ int read_input(
     outputs->map = NULL;
     for (int i = 0; i < *num_outputs; i++) {
         Output* output = malloc(sizeof(Output));
-        fscanf(file, "Output %s %hu %hu\n", output->name, &output->x, &output->y);
+        fscanf(file, "Output %s %u %u\n", output->name, &output->x, &output->y);
         HASH_ADD_STR(outputs->map, name, output);
     }
 
@@ -137,15 +137,19 @@ int read_input(
             fgets(line, sizeof(line), file);
             NetPin* pin = (NetPin*)malloc(sizeof(NetPin));
             if (strchr(line, '/') != NULL) {
-                sscanf(line, "Pin %15s\n", pin->instName);
-                char* instName = strtok(pin->instName, "/");
-                strcpy(pin->instName, instName);
+                sscanf(line, "Pin %15s\n", pin->key);
+                char tmp[MAX_NAME_LEN];
+                strcpy(tmp, pin->key);
+                strcpy(pin->instName, strtok(tmp, "/"));
                 strcpy(pin->libPinName, strtok(NULL, "/"));
                 HASH_ADD_STR(net->map, instName, pin);
             } else {
-                sscanf(line, "Pin %15s\n", pin->instName);
+                sscanf(line, "Pin %15s\n", pin->key);
+                strcpy(pin->instName, pin->key);
+                strcpy(pin->libPinName, pin->key);
                 HASH_ADD_STR(net->map, instName, pin);
             }
+            // printf("Net %s, Pin %s\n", net->name, pin->key);
         }
     }
 

@@ -85,6 +85,7 @@ typedef struct {
 typedef struct {
 	char instName[MAX_NAME_LEN];
 	char libPinName[MAX_NAME_LEN];
+	char key[MAX_NAME_LEN]; // Use instName + / + libPinName as key
 	UT_hash_handle hh;
 } NetPin;
 

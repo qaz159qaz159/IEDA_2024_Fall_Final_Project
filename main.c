@@ -54,32 +54,9 @@ int main(int argc, char* argv[]) {
     double initial_score = calculate_score(ff_blocks, gate_blocks, instances, timing_slack, gate_power, qpin_delay, displacement_delay, alpha, beta, gamma, lambda, bin);
     printf("Score: %lf\n", initial_score);
 
-    InstNetMapping* instNetMappings = malloc(sizeof(InstNetMapping));
-    size_t count = 0;
-    instNetMappings->net = NULL; 
-    instNetMappings = populate_inst_net_mapping(nets, &count);
-
-    // Example usage of find_net_by_inst_name
-    // Net* netFound = malloc(sizeof(Net));
-    // netFound = find_net_by_inst_name(instNetMappings, count, "C90606/IN4");
-    // printf("Net found for instance %s: %s\n", "C90606/IN4", netFound->name);
-
-    // Example usage of sort_ff_by_size
-    // printf("Before sorting:\n");
-    // FF* current_ff;
-    // FF* tmp;
-    // HASH_ITER(hh, ff_blocks->map, current_ff, tmp) {
-    //     printf("FF name: %s, size: %d\n", current_ff->name, current_ff->width * current_ff->height);
-    // }
-
     sort_ff_by_size(ff_blocks);
 
-    // printf("After sorting:\n");
-    // HASH_ITER(hh, ff_blocks->map, current_ff, tmp) {
-    //     printf("FF name: %s, size: %d\n", current_ff->name, current_ff->width * current_ff->height);
-    // }
-
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 10; i++) {
         bank_flip_flops(instances, nets, ff_blocks);
         if (check_placement(instances, die) == 1) {
             printf("Placement is valid\n");
@@ -94,24 +71,11 @@ int main(int argc, char* argv[]) {
         }
         double score = calculate_score(ff_blocks, gate_blocks, instances, timing_slack, gate_power, qpin_delay, displacement_delay, alpha, beta, gamma, lambda, bin);
         printf("In iteration %d, score: %lf, reduced percentage: %lf\n", i, score, (initial_score - score) / initial_score * 100);
-
-        Inst* tmp;
-        HASH_ITER(hh, instances->map, tmp, instances->map) {
-            printf("Instance name: %s, x: %d, y: %d\n", tmp->inst_name, tmp->x, tmp->y);
-        }
-
-        Net* tmp_net;
-        HASH_ITER(hh, nets->map, tmp_net, nets->map) {
-            printf("Net name: %s\n", tmp_net->name);
-        }
-
-
     }
 
     double final_score = calculate_score(ff_blocks, gate_blocks, instances, timing_slack, gate_power, qpin_delay, displacement_delay, alpha, beta, gamma, lambda, bin);
     printf("Score: %lf\n", final_score);
     printf("Reduced Percentage: %lf\n", (initial_score - final_score) / initial_score * 100);
-    // place_main(*ff_blocks, gate_blocks, *inputs, *outputs, *instances, *nets, *placements_rows_set, *displacement_delay, *bin, alpha, lambda, die);
 
 
     // Free allocated memory
