@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "place.h"
 #include "utils.h"
+#include "optimization.h"
+#include "read_input.h"
 
 #define MAX_DISPLAY_LEN 10
 
@@ -39,6 +41,12 @@ int main(int argc, char* argv[]) {
     // GatePower
     GatePowers* gate_power = malloc(sizeof(GatePowers));
 
+
+    // Used Inst
+    Insts* used_insts = malloc(sizeof(Insts));
+    // New Inst
+    Insts* new_insts = malloc(sizeof(Insts));
+
     printf("Reading input...\n");
     // Assuming read_input is defined and works correctly
     read_input(filename, &alpha, &beta, &gamma, &lambda, die, &input_count, inputs, &output_count, outputs, ff_blocks, gate_blocks, instances, nets, bin, placements_rows_set, displacement_delay, qpin_delay, timing_slack, gate_power);
@@ -68,7 +76,9 @@ int main(int argc, char* argv[]) {
     //     printf("FF name: %s, size: %d\n", current_ff->name, current_ff->width * current_ff->height);
     // }
 
-    place_main(*ff_blocks, gate_blocks, *inputs, *outputs, *instances, *nets, *placements_rows_set, *displacement_delay, *bin, alpha, lambda, die);
+    bank_flip_flops(instances, nets, ff_blocks, used_insts, new_insts);
+
+    // place_main(*ff_blocks, gate_blocks, *inputs, *outputs, *instances, *nets, *placements_rows_set, *displacement_delay, *bin, alpha, lambda, die);
 
 
     // Free allocated memory

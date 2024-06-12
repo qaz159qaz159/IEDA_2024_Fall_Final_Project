@@ -71,6 +71,8 @@ typedef struct {
 	char lib_cell_name[MAX_NAME_LEN];
 	uint32_t x;
 	uint32_t y;
+	uint32_t width;
+	uint32_t height;
 	UT_hash_handle hh;
 	uint8_t isUsed; // USED if used, UNUSED if not used
 } Inst;

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "place.h"
+#include "read_input.h"
 
 #define MAX_LINE_LEN 1024
 
@@ -110,6 +111,14 @@ int read_input(
     for (uint64_t i = 0; i < instances->count; i++) {
         Inst* instance = malloc(sizeof(Inst));
         fscanf(file, "Inst %s %s %u %u\n", instance->inst_name, instance->lib_cell_name, &instance->x, &instance->y);
+        instance->isUsed = NOT_USED;
+        // Find the FF or Gate block
+        FF* ff = NULL;
+        HASH_FIND_STR(ff_blocks->map, instance->lib_cell_name, ff);
+        if (ff != NULL) {
+            instance->width = ff->width;
+            instance->height = ff->height;
+        }
         HASH_ADD_STR(instances->map, inst_name, instance);
     }
     
@@ -126,6 +135,9 @@ int read_input(
             NetPin* pin = (NetPin*)malloc(sizeof(NetPin));
             if (strchr(line, '/') != NULL) {
                 sscanf(line, "Pin %15s\n", pin->instName);
+                char* instName = strtok(pin->instName, "/");
+                strcpy(pin->instName, instName);
+                strcpy(pin->libPinName, strtok(NULL, "/"));
                 HASH_ADD_STR(net->map, instName, pin);
             } else {
                 sscanf(line, "Pin %15s\n", pin->instName);
