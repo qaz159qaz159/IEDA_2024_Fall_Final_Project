@@ -9,3 +9,6 @@ InstNetMapping* populate_inst_net_mapping(Nets* nets, size_t* count);
 
 FF** extract_ff_lib_with_n_bits(FFs* ff_lib, uint16_t n_bits, size_t* count);
 Inst** extract_ff_insts_with_n_bits(Insts* insts, FFs* ff_lib, uint16_t n_bits, uint8_t used, size_t* count);
+void calculate_FF_innate_cost(FFs* ff_lib, GatePowers* powers, const double beta, const double gamma);
+int compare_ff_innate_cost(const void *a, const void *b);
+void sort_ff_by_innate_cost(FFs* ff_lib);
