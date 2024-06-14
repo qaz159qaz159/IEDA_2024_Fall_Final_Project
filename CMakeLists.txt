@@ -9,7 +9,13 @@ project(IEDA_Final_Project)
 set(CMAKE_C_FLAGS_DEBUG "-g")
 
 # Add the executable
-add_executable(IEDA_Final_Project main.c read_input.c place.c utils.c optimization.c quadtree.c constraints.c grid.c)
+add_executable(IEDA_Final_Project place.c utils.c optimization.c constraints.c
+        main.cpp
+        structure.h
+        read_input.cpp
+        grid.cpp
+        grid.h
+)
 
 # Include directories
 target_include_directories(IEDA_Final_Project PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
