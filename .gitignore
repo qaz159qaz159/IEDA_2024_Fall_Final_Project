@@ -51,3 +51,6 @@ Makefile
 
 # Ignore build directories (you can add more build directories if needed)
 build/
+
+# Output files
+output.txt

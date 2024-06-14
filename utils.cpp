@@ -22,6 +22,7 @@ double calculate_score(
         const shared_ptr<Die> &die, const string &output_filename
 ) {
     ofstream output_file(output_filename);
+    output_file << fixed << setprecision(2);
 
     double total_tns = 0.0;
     double total_power = 0.0;
