@@ -45,7 +45,7 @@ void sort_ff_by_size(FFs* ff_blocks) {
     qsort(ff_array, count, sizeof(FF*), compare_ff);
 
     for (size_t i = 0; i < count; i++) {
-        if (ff_array[i]->bits == 2) printf("FF name: %s, size: %d\n", ff_array[i]->name, ff_array[i]->width * ff_array[i]->height);
+        if (ff_array[i]->bits == 4) printf("FF name: %s, size: %d\n", ff_array[i]->name, ff_array[i]->width * ff_array[i]->height);
     }
 
     replace_ff_map(ff_blocks, ff_array, count);
@@ -146,6 +146,14 @@ Inst** extract_ff_insts_with_n_bits(Insts* insts, FFs* ff_lib, uint16_t n_bits, 
         }
     }
     return array;
+}
+
+uint32_t manhattan_distance_inst(Inst* inst1, Inst* inst2) {
+    return abs((int)inst1->x - (int)inst2->x) + abs((int)inst1->y - (int)inst2->y);
+}
+
+uint32_t manhattan_distance(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2) {
+    return abs((int)x1 - (int)x2) + abs((int)y1 - (int)y2);
 }
 
 

@@ -7,7 +7,9 @@
 #include <errno.h>
 #include "uthash.h"
 
-#define MAX_NAME_LEN 16
+#define MAX_NAME_LEN 128
+#define TRUE 1
+#define FALSE 0
 
 typedef struct {
 	char name[MAX_NAME_LEN];
@@ -107,11 +109,12 @@ typedef struct {
 	uint32_t width;
 	uint32_t height;
 	uint32_t totalNumOfSites;
+	UT_hash_handle hh;
 } PlacementsRows;
 
 typedef struct {
 	uint32_t count;
-	PlacementsRows** items;
+	PlacementsRows* items;
 } PlacementsRowsSet;
 
 typedef struct {
@@ -172,7 +175,9 @@ typedef struct {
 	uint32_t height;
 } Die;
 
-int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts insts, Nets nets, PlacementsRowsSet placementRowsSet, DisplacementDelay displacementDelay, Bin bin, double alpha, double lambda, Die*);
+
+
+// int place_main(FFs ffs, Gates* gates, Inputs inputs, Outputs outputs, Insts insts, Nets nets, PlacementsRowsSet placementRowsSet, DisplacementDelay displacementDelay, Bin bin, double alpha, double lambda, Die*);
 //int place_main(FF, Gate, Inst*, Pin* inputs, uint32_t inputLen, Pin* outputs, uint32_t outputLen, PlacementsRows*, double DisplacementDelay,  double* timeslack, uint32_t slack_len, double Alpha, double Lambda, double Die_st_x/* Die start x*/, double Die_st_y, double Die_width, double Die_height, PlacementsRowsSet* rt/*return*/);
 
 #endif // PLACE_H

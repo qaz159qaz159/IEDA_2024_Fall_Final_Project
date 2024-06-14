@@ -1,4 +1,9 @@
+#ifndef READ_INPUT_H
+#define READ_INPUT_H
+
 #include "place.h"
+#include "quadtree.h"
+#include "grid.h"
 
 int read_input(
     // Input file name
@@ -32,5 +37,10 @@ int read_input(
     // TimingSlack
     TimingSlacks*       timing_slack,
     // GatePower
-    GatePowers*         gate_power
+    GatePowers*         gate_power,
+    // Grid
+    Grid*               grid
     );
+
+
+#endif // READ_INPUT_H

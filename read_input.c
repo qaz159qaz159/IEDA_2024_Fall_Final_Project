@@ -3,6 +3,7 @@
 #include <string.h>
 #include "place.h"
 #include "read_input.h"
+#include "grid.h"
 
 #define MAX_LINE_LEN 1024
 
@@ -39,7 +40,9 @@ int read_input(
     // TimingSlack
     TimingSlacks*       timing_slack,
     // GatePower
-    GatePowers*         gate_power
+    GatePowers*         gate_power,
+    // Grid
+    Grid*               grid
     ) {
 
     printf("Reading input from file %s\n", filename);
@@ -122,6 +125,8 @@ int read_input(
             instance->width = ff->width;
             instance->height = ff->height;
         }
+        // QuadTreeNode* node = create_quadtree_node(instance->x, instance->y, instance->width, instance->height);
+        // insert_quadtree(quad_tree, instance);
         HASH_ADD_STR(instances->map, inst_name, instance);
     }
     
@@ -149,7 +154,6 @@ int read_input(
                 strcpy(pin->libPinName, pin->key);
                 HASH_ADD_STR(net->map, instName, pin);
             }
-            // printf("Net %s, Pin %s\n", net->name, pin->key);
         }
     }
 
@@ -157,14 +161,25 @@ int read_input(
     fscanf(file, "BinHeight %u\n", &bin->height);
     fscanf(file, "BinMaxUtil %lf\n", &bin->maxUtil);
 
+    placements_rows_set->count = 0;
+    PlacementsRows* row_start = malloc(sizeof(PlacementsRows)); // TODO: Placement Rows is not needed.
+    PlacementsRows* row_end = malloc(sizeof(PlacementsRows));
     while (fgets(line, sizeof(line), file)) {
         if (strncmp(line, "PlacementRows", 13) == 0) {
+            if (placements_rows_set->count == 0) sscanf(line, "PlacementRows %u %u %u %u %u", &row_start->start_x, &row_start->start_y, &row_start->width, &row_start->height, &row_start->totalNumOfSites);
+            else sscanf(line, "PlacementRows %u %u %u %u %u", &row_end->start_x, &row_end->start_y, &row_end->width, &row_end->height, &row_end->totalNumOfSites);
             placements_rows_set->count++;
-            placements_rows_set->items = realloc(placements_rows_set->items, placements_rows_set->count * sizeof(PlacementsRows*));
-            PlacementsRows* row = malloc(sizeof(PlacementsRows));
-            placements_rows_set->items[placements_rows_set->count - 1] = row;
-            sscanf(line, "PlacementsRow %u %u %u %u %u", &row->start_x, &row->start_y, &row->width, &row->height, &row->totalNumOfSites);
         } else break;
+    }
+
+    create_grid(grid, row_start->width * row_start->totalNumOfSites, row_end->start_y + row_end->height - row_start->start_y, row_start->width, row_start->height, row_start->start_x, row_start->start_y);
+    free(row_start);
+    free(row_end);
+
+    // Insert instances to the grid
+    Inst* instance;
+    for (instance = instances->map; instance != NULL; instance = (Inst*)instance->hh.next) {
+        insert_to_grid(grid, instance);
     }
     
     sscanf(line, "DisplacementDelay %lf", &displacement_delay->coefficient);
