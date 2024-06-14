@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 #include "read_input.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -47,11 +48,10 @@ int main(int argc, char *argv[]) {
                *gate_blocks, *instances, *nets, *bin, *placements_rows_set, *displacement_delay, *qpin_delay,
                *timing_slack, *gate_power, *grid);
 
-    // Print all FF blocks
-    cout << "FF blocks:" << endl;
-    for (const auto &ff: ff_blocks->map) {
-        cout << "FF block: " << ff.first << " " << ff.second.name << " " << ff.second.width << " " << ff.second.height
-             << " " << ff.second.pin_count << endl;
-    }  // No need to explicitly free allocated memory since we are using smart pointers
+    const string output_filename = "../output.txt";
+    cout << "Score: " << calculate_score(ff_blocks, gate_blocks, instances, timing_slack, gate_power, qpin_delay,
+                                        displacement_delay, alpha, beta, gamma, lambda, bin, nets, inputs, outputs, die, output_filename)
+         << endl;
+
     return 0;
 }
