@@ -8,8 +8,7 @@
 #include <unordered_map>
 #include <memory>
 #include <cstring>
-#include "grid.h"
-#include "structure.h"
+#include "read_input.h"
 
 using namespace std;
 

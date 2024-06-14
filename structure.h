@@ -14,8 +14,6 @@
 #include <string>
 
 #define MAX_NAME_LEN 128
-#define USED 1
-#define NOT_USED 0
 
 using namespace std;
 
@@ -108,7 +106,7 @@ public:
     uint32_t height;
     bool isUsed;
 
-    Inst() : inst_name(), lib_cell_name(), x(0), y(0), width(0), height(0), isUsed(NOT_USED) {
+    Inst() : inst_name(), lib_cell_name(), x(0), y(0), width(0), height(0), isUsed(false) {
         memset(inst_name, 0, MAX_NAME_LEN);
         memset(lib_cell_name, 0, MAX_NAME_LEN);
     }
