@@ -58,24 +58,25 @@ int read_input(
         return -1;
     }
 
-    file >> alpha >> beta >> gamma >> lambda;
-    file >> die.lower_left_x >> die.lower_left_y >> die.upper_right_x >> die.upper_right_y;
+    string prefix;
+    file >> prefix >> alpha >> prefix >> beta >> prefix >> gamma >> prefix >> lambda; // Error: "Alpha" is a string, should be alpha
+    file >> prefix >> die.lower_left_x >> die.lower_left_y >> die.upper_right_x >> die.upper_right_y;
     die.height = die.upper_right_y - die.lower_left_y;
     die.width = die.upper_right_x - die.lower_left_x;
 
-    file >> num_inputs;
+    file >> prefix >> num_inputs;
     inputs.count = num_inputs;
     for (int i = 0; i < num_inputs; i++) {
         auto input = make_shared<Input>();
-        file >> input->name >> input->x >> input->y;
+        file >> prefix >> input->name >> input->x >> input->y;
         inputs.map[input->name] = *input;
     }
 
-    file >> num_outputs;
+    file >> prefix >> num_outputs;
     outputs.count = num_outputs;
     for (int i = 0; i < num_outputs; i++) {
         auto output = make_shared<Output>();
-        file >> output->name >> output->x >> output->y;
+        file >> prefix >> output->name >> output->x >> output->y;
         outputs.map[output->name] = *output;
     }
 
@@ -89,7 +90,7 @@ int read_input(
             ff_blocks.count++;
             auto ff = make_shared<FF>();
             stringstream ss(line);
-            ss >> ff->bits >> ff->name >> ff->width >> ff->height >> ff->pin_count;
+            ss >> prefix >> ff->bits >> ff->name >> ff->width >> ff->height >> ff->pin_count;
             ff_blocks.map[ff->name] = *ff;
             for (uint16_t i = 0; i < ff->pin_count; i++) {
                 getline(file, line);
@@ -103,7 +104,7 @@ int read_input(
             gate_blocks.count++;
             auto gate = make_shared<Gate>();
             stringstream ss(line);
-            ss >> gate->name >> gate->width >> gate->height >> gate->pin_count;
+            ss >> prefix >> gate->name >> gate->width >> gate->height >> gate->pin_count;
             gate_blocks.map[gate->name] = *gate;
             for (uint16_t i = 0; i < gate->pin_count; i++) {
                 getline(file, line);
@@ -117,13 +118,12 @@ int read_input(
         }
     }
 
-    getline(file, line);
     stringstream ss(line);
-    ss >> instances.count;
+    ss >> prefix >> instances.count;
     for (uint64_t i = 0; i < instances.count; i++) {
         auto instance = make_shared<Inst>();
-        file >> instance->inst_name >> instance->lib_cell_name >> instance->x >> instance->y;
-        instance->isUsed = NOT_USED;
+        file >> prefix >> instance->inst_name >> instance->lib_cell_name >> instance->x >> instance->y;
+        instance->isUsed = false;
         auto ff_it = ff_blocks.map.find(instance->lib_cell_name);
         if (ff_it != ff_blocks.map.end()) {
             instance->width = ff_it->second.width;
@@ -132,40 +132,40 @@ int read_input(
         instances.map[instance->inst_name] = *instance;
     }
 
-    file >> nets.count;
+    file >> prefix >> nets.count;
     for (uint64_t i = 0; i < nets.count; i++) {
-        getline(file, line);
         auto net = make_shared<Net>();
-        stringstream net_ss(line);
-        net_ss >> net->name >> net->pinCount;
+        file >> prefix >> net->name >> net->pinCount;
         nets.map[net->name] = *net;
         for (uint64_t j = 0; j < net->pinCount; j++) {
-            getline(file, line);
             auto pin = make_shared<NetPin>();
-            stringstream pin_ss(line);
-            pin_ss >> pin->key;
-            if (line.find('/') != string::npos) {
-                strcpy(pin->instName, strtok(pin->key, "/"));
-                strcpy(pin->libPinName, strtok(nullptr, "/"));
+            file >> prefix >> pin->key;
+            if (pin->key.find('/') != string::npos) {
+                // Split the key into instance name and lib pin name by '/'
+                size_t pos = pin->key.find('/');
+                strcpy(pin->instName, pin->key.substr(0, pos).c_str());
+                strcpy(pin->libPinName, pin->key.substr(pos + 1).c_str());
             } else {
-                strcpy(pin->instName, pin->key);
-                strcpy(pin->libPinName, pin->key);
+                // pin->instName, pin->libPinName are same as pin->key
+                strcpy(pin->instName, pin->key.c_str());
+                strcpy(pin->libPinName, pin->key.c_str());
             }
             net->map[pin->instName] = *pin;
         }
     }
 
-    file >> bin.width >> bin.height >> bin.maxUtil;
-
+    file >> prefix >> bin.width >> prefix >> bin.height >> prefix >> bin.maxUtil;
     placements_rows_set.count = 0;
     auto row_start = make_shared<PlacementsRows>();
     auto row_end = make_shared<PlacementsRows>();
+    getline(file, line); // I don't know why this is needed
     while (getline(file, line)) {
         if (line.find("PlacementRows") == 0) {
+            stringstream ss(line);
             if (placements_rows_set.count == 0) {
-                ss >> row_start->start_x >> row_start->start_y >> row_start->width >> row_start->height >> row_start->totalNumOfSites;
+                ss >> prefix >> row_start->start_x >> row_start->start_y >> row_start->width >> row_start->height >> row_start->totalNumOfSites;
             } else {
-                ss >> row_end->start_x >> row_end->start_y >> row_end->width >> row_end->height >> row_end->totalNumOfSites;
+                ss >> prefix >> row_end->start_x >> row_end->start_y >> row_end->width >> row_end->height >> row_end->totalNumOfSites;
             }
             placements_rows_set.count++;
         } else {
@@ -173,14 +173,15 @@ int read_input(
         }
     }
 
-    create_grid(grid, row_start->width * row_start->totalNumOfSites, row_end->start_y + row_end->height - row_start->start_y, row_start->width, row_start->height, row_start->start_x, row_start->start_y);
+    // Create grid
+    grid.create_grid(row_start->width * row_start->totalNumOfSites, row_end->start_y + row_end->height - row_start->start_y, row_start->width, row_start->height, row_start->start_x, row_start->start_y);
 
     // Insert instances to the grid
     for (auto& instance : instances.map) {
-        insert_to_grid(grid, &instance.second);
+        grid.insert_to_grid(make_shared<Inst>(instance.second));
     }
 
-    ss >> displacement_delay.coefficient;
+    ss >> prefix >> displacement_delay.coefficient;
 
     qpin_delay.count = 0;
     timing_slack.count = 0;
@@ -190,19 +191,19 @@ int read_input(
             qpin_delay.count++;
             auto qpin = make_shared<QpinDelay>();
             stringstream qpin_ss(line);
-            qpin_ss >> qpin->libCellName >> qpin->delay;
+            qpin_ss >> prefix >> qpin->libCellName >> qpin->delay;
             qpin_delay.map[qpin->libCellName] = *qpin;
         } else if (line.find("TimingSlack") == 0) {
             timing_slack.count++;
             auto slack = make_shared<TimingSlack>();
             stringstream slack_ss(line);
-            slack_ss >> slack->instanceCellName >> slack->pinName >> slack->slack;
+            slack_ss >> prefix >> slack->instanceCellName >> slack->pinName >> slack->slack;
             timing_slack.map[slack->instanceCellName] = *slack;
         } else if (line.find("GatePower") == 0) {
             gate_power.count++;
             auto power = make_shared<GatePower>();
             stringstream power_ss(line);
-            power_ss >> power->libCellName >> power->powerConsumption;
+            power_ss >> prefix >> power->libCellName >> power->powerConsumption;
             gate_power.map[power->libCellName] = *power;
         } else {
             break;

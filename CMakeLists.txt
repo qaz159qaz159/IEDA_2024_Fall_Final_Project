@@ -5,11 +5,12 @@ cmake_minimum_required(VERSION 3.10)
 project(IEDA_Final_Project)
 
 # Specify the C standard
-# set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
 # Add the executable
-add_executable(IEDA_Final_Project place.c utils.c optimization.c constraints.c
+add_executable(IEDA_Final_Project
         main.cpp
         structure.h
         read_input.cpp

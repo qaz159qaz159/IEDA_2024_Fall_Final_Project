@@ -1,14 +1,7 @@
-//
-// Created by Ming-Hao Hsu on 2024/6/14.
-//
-
 #include <iostream>
 #include <memory>
+#include <string>
 #include "read_input.h"
-#include "constraints.h"
-#include "quadtree.h"
-
-#define MAX_DISPLAY_LEN 10
 
 using namespace std;
 
@@ -52,36 +45,11 @@ int main(int argc, char* argv[]) {
     cout << "Reading input..." << endl;
     // Assuming read_input is defined and works correctly
     read_input(filename, alpha, beta, gamma, lambda, *die, input_count, *inputs, output_count, *outputs, *ff_blocks, *gate_blocks, *instances, *nets, *bin, *placements_rows_set, *displacement_delay, *qpin_delay, *timing_slack, *gate_power, *grid);
-    sort_ff_by_size(*ff_blocks);
-    FF* ff;
-    FF* tmp;
-    HASH_ITER(hh, ff_blocks->map, ff, tmp) {
-        cout << ff->name << ": " << ff->bits << ", " << ff->height << ", " << ff->width << ", " << ff->height * ff->width << endl;
-    }
 
-//    double initial_score = calculate_score(*ff_blocks, *gate_blocks, *instances, *timing_slack, *gate_power, *qpin_delay, *displacement_delay, alpha, beta, gamma, lambda, *bin, *nets, *inputs, *outputs, *die);
-//    cout << "Score: " << initial_score << endl;
-
-//    for (int i = 0; i < 50; i++) {
-//        cout << "Iteration " << i+1 << endl;
-//        bank_flip_flops(*instances, *nets, *ff_blocks, *grid);
-//        // cout << "Banked flip flops" << endl;
-//        // if (check_placement(*instances, *die) == 1) {
-//        //     cout << "Placement is valid" << endl;
-//        // } else {
-//        //     cout << "Placement is invalid" << endl;
-//        // }
-//
-//        // if (check_overlap(*instances, *placements_rows_set) == 1) {
-//        //     cout << "Overlap is valid" << endl;
-//        // } else {
-//        //     cout << "Overlap is invalid" << endl;
-//        // }
-//        double score = calculate_score(*ff_blocks, *gate_blocks, *instances, *timing_slack, *gate_power, *qpin_delay, *displacement_delay, alpha, beta, gamma, lambda, *bin, *nets, *inputs, *outputs, *die);
-//        cout << "In iteration " << i+1 << ", score: " << score << ", reduced percentage: " << (initial_score - score) / initial_score * 100 << "%" << endl;
-//    }
-
-    // No need to explicitly free allocated memory since we are using smart pointers
+    // Print all FF blocks
+    cout << "FF blocks:" << endl;
+    for (const auto& ff : ff_blocks->map) {
+        cout << "FF block: " << ff.first << " " << ff.second.name << " " << ff.second.width << " " << ff.second.height << " " << ff.second.pin_count << endl;
+    }  // No need to explicitly free allocated memory since we are using smart pointers
     return 0;
 }
-
