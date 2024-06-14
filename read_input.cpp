@@ -16,39 +16,39 @@ using namespace std;
 // Function to read input data
 int read_input(
         // Input file name
-        const string& filename,
+        const string &filename,
         // Parameters
-        double& alpha,
-        double& beta,
-        double& gamma,
-        double& lambda,
-        Die& die,
+        double &alpha,
+        double &beta,
+        double &gamma,
+        double &lambda,
+        Die &die,
         // Input and Output
-        int& num_inputs,
-        Inputs& inputs,
-        int& num_outputs,
-        Outputs& outputs,
+        int &num_inputs,
+        Inputs &inputs,
+        int &num_outputs,
+        Outputs &outputs,
         // FF and Gate blocks
-        FFs& ff_blocks,
-        Gates& gate_blocks,
+        FFs &ff_blocks,
+        Gates &gate_blocks,
         // Instances
-        Insts& instances,
+        Insts &instances,
         // Nets
-        Nets& nets,
+        Nets &nets,
         // Bin
-        Bin& bin,
+        Bin &bin,
         // Placements
-        PlacementsRowsSet& placements_rows_set,
+        PlacementsRowsSet &placements_rows_set,
         // DisplacementDelay
-        DisplacementDelay& displacement_delay,
+        DisplacementDelay &displacement_delay,
         // QpinDelay
-        QpinDelays& qpin_delay,
+        QpinDelays &qpin_delay,
         // TimingSlack
-        TimingSlacks& timing_slack,
+        TimingSlacks &timing_slack,
         // GatePower
-        GatePowers& gate_power,
+        GatePowers &gate_power,
         // Grid
-        Grid& grid
+        Grid &grid
 ) {
 
     cout << "Reading input from file " << filename << endl;
@@ -59,7 +59,8 @@ int read_input(
     }
 
     string prefix;
-    file >> prefix >> alpha >> prefix >> beta >> prefix >> gamma >> prefix >> lambda; // Error: "Alpha" is a string, should be alpha
+    file >> prefix >> alpha >> prefix >> beta >> prefix >> gamma >> prefix
+         >> lambda; // Error: "Alpha" is a string, should be alpha
     file >> prefix >> die.lower_left_x >> die.lower_left_y >> die.upper_right_x >> die.upper_right_y;
     die.height = die.upper_right_y - die.lower_left_y;
     die.width = die.upper_right_x - die.lower_left_x;
@@ -163,9 +164,11 @@ int read_input(
         if (line.find("PlacementRows") == 0) {
             stringstream ss(line);
             if (placements_rows_set.count == 0) {
-                ss >> prefix >> row_start->start_x >> row_start->start_y >> row_start->width >> row_start->height >> row_start->totalNumOfSites;
+                ss >> prefix >> row_start->start_x >> row_start->start_y >> row_start->width >> row_start->height
+                   >> row_start->totalNumOfSites;
             } else {
-                ss >> prefix >> row_end->start_x >> row_end->start_y >> row_end->width >> row_end->height >> row_end->totalNumOfSites;
+                ss >> prefix >> row_end->start_x >> row_end->start_y >> row_end->width >> row_end->height
+                   >> row_end->totalNumOfSites;
             }
             placements_rows_set.count++;
         } else {
@@ -174,10 +177,12 @@ int read_input(
     }
 
     // Create grid
-    grid.create_grid(row_start->width * row_start->totalNumOfSites, row_end->start_y + row_end->height - row_start->start_y, row_start->width, row_start->height, row_start->start_x, row_start->start_y);
+    grid.create_grid(row_start->width * row_start->totalNumOfSites,
+                     row_end->start_y + row_end->height - row_start->start_y, row_start->width, row_start->height,
+                     row_start->start_x, row_start->start_y);
 
     // Insert instances to the grid
-    for (auto& instance : instances.map) {
+    for (auto &instance: instances.map) {
         grid.insert_to_grid(make_shared<Inst>(instance.second));
     }
 

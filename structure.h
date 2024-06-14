@@ -247,7 +247,7 @@ public:
 class InstNetMapping {
 public:
     char instName[MAX_NAME_LEN];
-    Net* net;
+    Net *net;
 
     InstNetMapping() : instName(), net(nullptr) {
         memset(instName, 0, MAX_NAME_LEN);

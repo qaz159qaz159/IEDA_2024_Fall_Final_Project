@@ -11,7 +11,8 @@
 
 using namespace std;
 
-void Grid::create_grid(uint32_t width, uint32_t height, uint32_t gridSizeX, uint32_t gridSizeY, uint32_t startX, uint32_t startY) {
+void Grid::create_grid(uint32_t width, uint32_t height, uint32_t gridSizeX, uint32_t gridSizeY, uint32_t startX,
+                       uint32_t startY) {
     this->GRID_SIZE_X = gridSizeX;
     this->GRID_SIZE_Y = gridSizeY;
     this->rows = (height + gridSizeY - 1) / gridSizeY;
@@ -35,7 +36,7 @@ uint32_t Grid::get_cell_index(uint32_t x, uint32_t y) const {
     return row * cols + col;
 }
 
-void Grid::insert_to_grid(const shared_ptr<Inst>& instance) {
+void Grid::insert_to_grid(const shared_ptr<Inst> &instance) {
     uint32_t index = get_cell_index(instance->x, instance->y);
     auto new_cell = make_shared<GridCell>();
     new_cell->instance = instance;
@@ -45,7 +46,7 @@ void Grid::insert_to_grid(const shared_ptr<Inst>& instance) {
     // cout << "Instance " << instance->inst_name << " inserted to grid cell " << index << "\n";
 }
 
-bool Grid::check_overlap_grid(const shared_ptr<Inst>& instance) {
+bool Grid::check_overlap_grid(const shared_ptr<Inst> &instance) {
     uint32_t x_min = (instance->x - start_x) / GRID_SIZE_X;
     uint32_t y_min = (instance->y - start_y) / GRID_SIZE_Y;
     uint32_t x_max = (instance->x + instance->width - start_x) / GRID_SIZE_X;
@@ -73,7 +74,7 @@ bool Grid::check_overlap_grid(const shared_ptr<Inst>& instance) {
     return false;
 }
 
-void Grid::get_position_by_index(uint32_t index, uint32_t& x, uint32_t& y) const {
+void Grid::get_position_by_index(uint32_t index, uint32_t &x, uint32_t &y) const {
     uint32_t row = index / cols;
     uint32_t col = index % cols;
     x = col * GRID_SIZE_X;
