@@ -71,8 +71,8 @@ int read_input(
         file >> prefix >> input->name >> input->x >> input->y;
         inputs.map[input->name] = *input;
         auto input_instance = make_shared<Inst>();
-        input_instance->inst_name = input->name;
-        input_instance->lib_cell_name = "INPUT";
+        input_instance->instName = input->name;
+        input_instance->libCellName = "INPUT";
         input_instance->x = input->x;
         input_instance->y = input->y;
         instances.map[input->name] = *input_instance;
@@ -85,8 +85,8 @@ int read_input(
         file >> prefix >> output->name >> output->x >> output->y;
         outputs.map[output->name] = *output;
         auto output_instance = make_shared<Inst>();
-        output_instance->inst_name = output->name;
-        output_instance->lib_cell_name = "OUTPUT";
+        output_instance->instName = output->name;
+        output_instance->libCellName = "OUTPUT";
         output_instance->x = output->x;
         output_instance->y = output->y;
         instances.map[output->name] = *output_instance;
@@ -134,14 +134,14 @@ int read_input(
     ss >> prefix >> instances.count;
     for (uint64_t i = 0; i < instances.count; i++) {
         auto instance = make_shared<Inst>();
-        file >> prefix >> instance->inst_name >> instance->lib_cell_name >> instance->x >> instance->y;
+        file >> prefix >> instance->instName >> instance->libCellName >> instance->x >> instance->y;
         instance->isUsed = false;
-        auto ff_it = ff_blocks.map.find(instance->lib_cell_name);
+        auto ff_it = ff_blocks.map.find(instance->libCellName);
         if (ff_it != ff_blocks.map.end()) {
             instance->width = ff_it->second.width;
             instance->height = ff_it->second.height;
         }
-        instances.map[instance->inst_name] = *instance;
+        instances.map[instance->instName] = *instance;
     }
 
     instances.count = instances.map.size();
@@ -177,10 +177,10 @@ int read_input(
         if (line.find("PlacementRows") == 0) {
             stringstream ss(line);
             if (placements_rows_set.count == 0) {
-                ss >> prefix >> row_start->start_x >> row_start->start_y >> row_start->width >> row_start->height
+                ss >> prefix >> row_start->startX >> row_start->startY >> row_start->width >> row_start->height
                    >> row_start->totalNumOfSites;
             } else {
-                ss >> prefix >> row_end->start_x >> row_end->start_y >> row_end->width >> row_end->height
+                ss >> prefix >> row_end->startX >> row_end->startY >> row_end->width >> row_end->height
                    >> row_end->totalNumOfSites;
             }
             placements_rows_set.count++;
@@ -191,8 +191,8 @@ int read_input(
 
     // Create grid
     grid.create_grid(row_start->width * row_start->totalNumOfSites,
-                     row_end->start_y + row_end->height - row_start->start_y, row_start->width, row_start->height,
-                     row_start->start_x, row_start->start_y);
+                     row_end->startY + row_end->height - row_start->startY, row_start->width, row_start->height,
+                     row_start->startX, row_start->startY);
 
     // Insert instances to the grid
     for (auto &instance: instances.map) {

@@ -32,13 +32,13 @@ double calculate_score(
     // Calculate TNS: QpinDelay + TimingSlack
     double total_qpin_delay = 0.0, total_timing_slack = 0.0;
     for (auto &[key, inst]: insts->map) {
-        if (inst.lib_cell_name.find("FF") == string::npos) continue;
+        if (inst.libCellName.find("FF") == string::npos) continue;
 
-        if (auto slack = timing_slacks->map.find(inst.inst_name); slack != timing_slacks->map.end()) {
+        if (auto slack = timing_slacks->map.find(inst.instName); slack != timing_slacks->map.end()) {
             total_timing_slack += slack->second.slack;
         }
 
-        if (auto qpin_delay = qpin_delays->map.find(inst.lib_cell_name); qpin_delay != qpin_delays->map.end()) {
+        if (auto qpin_delay = qpin_delays->map.find(inst.libCellName); qpin_delay != qpin_delays->map.end()) {
             total_qpin_delay += qpin_delay->second.delay;
         }
     }
@@ -83,13 +83,13 @@ double calculate_score(
     for (auto &[key, inst]: insts->map) {
         if (inst.isUsed) continue;
 
-        if (auto power = gate_powers->map.find(inst.lib_cell_name); power != gate_powers->map.end() &&
+        if (auto power = gate_powers->map.find(inst.libCellName); power != gate_powers->map.end() &&
                                                                     power->second.libCellName.find("FF") !=
                                                                     string::npos) {
             total_power += power->second.powerConsumption;
         }
 
-        if (auto ff = ffs->map.find(inst.lib_cell_name); ff != ffs->map.end()) {
+        if (auto ff = ffs->map.find(inst.libCellName); ff != ffs->map.end()) {
             total_area += (ff->second.width * ff->second.height);
         }
     }

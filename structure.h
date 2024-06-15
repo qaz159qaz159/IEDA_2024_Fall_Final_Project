@@ -88,15 +88,15 @@ public:
 
 class Inst {
 public:
-    string inst_name;
-    string lib_cell_name;
+    string instName;
+    string libCellName;
     uint32_t x;
     uint32_t y;
     uint32_t width;
     uint32_t height;
     bool isUsed;
 
-    Inst() : inst_name(), lib_cell_name(), x(0), y(0), width(0), height(0), isUsed(false) {}
+    Inst() : instName(), libCellName(), x(0), y(0), width(0), height(0), isUsed(false) {}
 };
 
 class Insts {
@@ -135,13 +135,13 @@ public:
 
 class PlacementsRows {
 public:
-    uint32_t start_x;
-    uint32_t start_y;
+    uint32_t startX;
+    uint32_t startY;
     uint32_t width;
     uint32_t height;
     uint32_t totalNumOfSites;
 
-    PlacementsRows() : start_x(0), start_y(0), width(0), height(0), totalNumOfSites(0) {}
+    PlacementsRows() : startX(0), startY(0), width(0), height(0), totalNumOfSites(0) {}
 };
 
 class PlacementsRowsSet {

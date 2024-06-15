@@ -26,13 +26,13 @@ class Grid {
 public:
     uint32_t rows;
     uint32_t cols;
-    uint32_t GRID_SIZE_X;
-    uint32_t GRID_SIZE_Y;
-    uint32_t start_x;
-    uint32_t start_y;
+    uint32_t gridSizeX;
+    uint32_t gridSizeY;
+    uint32_t startX;
+    uint32_t startY;
     vector<shared_ptr<GridCell> > cells;
 
-    Grid() : rows(0), cols(0), GRID_SIZE_X(0), GRID_SIZE_Y(0), start_x(0), start_y(0) {};
+    Grid() : rows(0), cols(0), gridSizeX(0), gridSizeY(0), startX(0), startY(0) {};
 
     void create_grid(uint32_t width, uint32_t height, uint32_t gridSizeX, uint32_t gridSizeY, uint32_t startX,
                      uint32_t startY);
