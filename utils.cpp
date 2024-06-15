@@ -51,70 +51,29 @@ double calculate_score(
     // Calculate TNS: DisplacementDelay
     double all_net_displacement_delay = 0.0;
     for (auto &[key, net]: nets->map) {
-        double total_md = 0.0;
         vector<NetPin *> pins_in_net;
         pins_in_net.reserve(net.map.size());
-        for (auto &[key, pin]: net.map) {
+        for (auto &[pin_key, pin]: net.map) {
             pins_in_net.push_back(&pin);
         }
-        int input_type = -1; // 0: INPUT, 1: Q, 2: OUTN
-        int input_idx = -1;
-        for (int j = 0; j < pins_in_net.size(); j++) {
-            if (pins_in_net[j]->libPinName.find("INPUT") != string::npos) {
-                input_idx = j;
-                input_type = 0;
-                break;
-            } else if (pins_in_net[j]->libPinName.find("Q") != string::npos) {
-                input_idx = j;
-                input_type = 1;
-                break;
-            } else if (pins_in_net[j]->libPinName.find("OUT") != string::npos) {
-                input_idx = j;
-                input_type = 2;
-                break;
-            }
-        }
-        if (input_idx == -1) {
-            continue;
-        }
-        cout << "Net: " << net.name << " Input: " << pins_in_net[input_idx]->instName << endl;
-        if (input_type == 0) {
-            auto inst_in = inputs->map.find(pins_in_net[input_idx]->instName);
-            for (size_t j = 0; j < pins_in_net.size(); j++) {
-                if (j == input_idx) continue;
-                auto inst_out_tmp = insts->map.find(pins_in_net[j]->instName);
-                if (inst_in != inputs->map.end() && inst_out_tmp != insts->map.end()) {
-                    total_md += displacement_delay->coefficient *
-                                static_cast<double>(manhattan_distance(inst_in->second.x, inst_in->second.y,
-                                                                       inst_out_tmp->second.x, inst_out_tmp->second.y));
-                }
-            }
-            all_net_displacement_delay += total_md;
-        } else {
-            auto inst_in = insts->map.find(pins_in_net[input_idx]->instName);
-            for (size_t j = 0; j < pins_in_net.size(); j++) {
-                if (j == input_idx) continue;
-                if (pins_in_net[j]->libPinName.find("OUT") != string::npos) {
-                    auto inst_out_tmp = outputs->map.find(pins_in_net[j]->instName);
-                    if (inst_in != insts->map.end() && inst_out_tmp != outputs->map.end()) {
-                        total_md += displacement_delay->coefficient *
-                                    static_cast<double>(manhattan_distance(inst_in->second.x, inst_in->second.y,
-                                                                           inst_out_tmp->second.x,
-                                                                           inst_out_tmp->second.y));
-                    }
-                } else {
+
+        for (size_t i = 0; i < pins_in_net.size(); i++) {
+            if ((pins_in_net[i]->libPinName.find("INPUT") != string::npos ||
+                 pins_in_net[i]->libPinName.find("Q") != string::npos ||
+                 pins_in_net[i]->libPinName.find("OUT") != string::npos) &&
+                pins_in_net[i]->instName.find("OUTPUT") == string::npos) {
+                auto inst_in = insts->map.find(pins_in_net[i]->instName);
+                for (size_t j = 0; j < pins_in_net.size(); j++) {
+                    if (j == i) continue;
                     auto inst_out_tmp = insts->map.find(pins_in_net[j]->instName);
-                    if (inst_in != insts->map.end() && inst_out_tmp != insts->map.end()) {
-                        total_md += displacement_delay->coefficient *
-                                    static_cast<double>(manhattan_distance(inst_in->second.x, inst_in->second.y,
-                                                                           inst_out_tmp->second.x,
-                                                                           inst_out_tmp->second.y));
-                    }
+                    all_net_displacement_delay += displacement_delay->coefficient *
+                                                  static_cast<double>(manhattan_distance(inst_in->second.x,
+                                                                                         inst_in->second.y,
+                                                                                         inst_out_tmp->second.x,
+                                                                                         inst_out_tmp->second.y));
                 }
             }
-            all_net_displacement_delay += total_md;
         }
-        cout << "Net: " << net.name << " DisplacementDelay: " << total_md << endl;
     }
     output_file << "Total DisplacementDelay: " << all_net_displacement_delay << endl;
     total_tns = total_qpin_delay + total_timing_slack + all_net_displacement_delay;
@@ -125,7 +84,8 @@ double calculate_score(
         if (inst.isUsed) continue;
 
         if (auto power = gate_powers->map.find(inst.lib_cell_name); power != gate_powers->map.end() &&
-                                                                    power->second.libCellName.find("FF") != string::npos) {
+                                                                    power->second.libCellName.find("FF") !=
+                                                                    string::npos) {
             total_power += power->second.powerConsumption;
         }
 
@@ -142,4 +102,3 @@ double calculate_score(
 
     return score;
 }
-

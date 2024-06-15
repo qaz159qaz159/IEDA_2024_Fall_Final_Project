@@ -70,6 +70,12 @@ int read_input(
         auto input = make_shared<Input>();
         file >> prefix >> input->name >> input->x >> input->y;
         inputs.map[input->name] = *input;
+        auto input_instance = make_shared<Inst>();
+        input_instance->inst_name = input->name;
+        input_instance->lib_cell_name = "INPUT";
+        input_instance->x = input->x;
+        input_instance->y = input->y;
+        instances.map[input->name] = *input_instance;
     }
 
     file >> prefix >> num_outputs;
@@ -78,6 +84,12 @@ int read_input(
         auto output = make_shared<Output>();
         file >> prefix >> output->name >> output->x >> output->y;
         outputs.map[output->name] = *output;
+        auto output_instance = make_shared<Inst>();
+        output_instance->inst_name = output->name;
+        output_instance->lib_cell_name = "OUTPUT";
+        output_instance->x = output->x;
+        output_instance->y = output->y;
+        instances.map[output->name] = *output_instance;
     }
 
     string line;
@@ -132,13 +144,15 @@ int read_input(
         instances.map[instance->inst_name] = *instance;
     }
 
+    instances.count = instances.map.size();
+
     file >> prefix >> nets.count;
     for (uint64_t i = 0; i < nets.count; i++) {
         auto net = make_shared<Net>();
         file >> prefix >> net->name >> net->pinCount;
         nets.map[net->name] = *net;
         for (uint64_t j = 0; j < net->pinCount; j++) {
-            auto *pin = new NetPin();
+            auto pin = make_shared<NetPin>();
             file >> prefix >> pin->key;
             if (pin->key.find('/') != string::npos) {
                 // Split the key into instance name and lib pin name by '/'
@@ -150,7 +164,7 @@ int read_input(
                 pin->instName = pin->key;
                 pin->libPinName = pin->key;
             }
-            net->map[pin->instName] = *pin;
+            nets.map[net->name].map[pin->key] = *pin;
         }
     }
 
@@ -185,7 +199,8 @@ int read_input(
         grid.insert_to_grid(make_shared<Inst>(instance.second));
     }
 
-    ss >> prefix >> displacement_delay.coefficient;
+    stringstream displacement_ss(line);
+    displacement_ss >> prefix >> displacement_delay.coefficient;
 
     qpin_delay.count = 0;
     timing_slack.count = 0;
@@ -214,6 +229,7 @@ int read_input(
         }
     }
 
+    file.close();
     cout << "Read input successfully" << endl;
     return 0;
 }

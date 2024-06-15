@@ -11,6 +11,7 @@
 #include <cmath>
 #include <vector>
 #include <memory>
+#include <iostream>
 #include "structure.h"
 
 class GridCell {
@@ -42,7 +43,9 @@ public:
 
     void get_position_by_index(uint32_t index, uint32_t &x, uint32_t &y) const;
 
-    uint32_t get_cell_index(uint32_t x, uint32_t y) const;
+    [[nodiscard]] uint32_t get_cell_index(uint32_t x, uint32_t y) const;
+
+    [[nodiscard]] vector<uint32_t> get_needed_cells(uint32_t x, uint32_t y, uint32_t width, uint32_t height) const;
 
     bool check_overlap_grid(const shared_ptr<Inst> &instance);
 

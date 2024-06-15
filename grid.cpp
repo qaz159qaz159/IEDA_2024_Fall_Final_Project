@@ -13,10 +13,6 @@ void Grid::create_grid(uint32_t width, uint32_t height, uint32_t gridSizeX, uint
     this->start_x = startX;
     this->start_y = startY;
     this->cells.resize(rows * cols);
-
-//    cout << "Grid created with " << rows << " rows and " << cols << " cols\n";
-//    cout << "Grid cell size: " << gridSizeX << " x " << gridSizeY << "\n";
-//    cout << "Grid start position: (" << startX << ", " << startY << ")\n";
 }
 
 void Grid::free_grid() {
@@ -29,14 +25,33 @@ uint32_t Grid::get_cell_index(uint32_t x, uint32_t y) const {
     return row * cols + col;
 }
 
-void Grid::insert_to_grid(const shared_ptr<Inst> &instance) {
-    uint32_t index = get_cell_index(instance->x, instance->y);
-    auto new_cell = make_shared<GridCell>();
-    new_cell->instance = instance;
-    new_cell->next = cells[index];
-    cells[index] = new_cell;
+vector<uint32_t> Grid::get_needed_cells(uint32_t x, uint32_t y, uint32_t width, uint32_t height) const {
+    // Actually, this function is almost not used in the final version since only FF20 is used.
+    vector<uint32_t> needed_cells;
+    uint32_t x_min = (x - start_x) / GRID_SIZE_X;
+    uint32_t y_min = (y - start_y) / GRID_SIZE_Y;
+    uint32_t x_max = (x + width - start_x) / GRID_SIZE_X;
+    uint32_t y_max = (y + height - start_y) / GRID_SIZE_Y;
 
-    // cout << "Instance " << instance->inst_name << " inserted to grid cell " << index << "\n";
+    for (uint32_t row = y_min; row <= y_max; ++row) {
+        for (uint32_t col = x_min; col <= x_max; ++col) {
+            needed_cells.push_back(Grid::get_cell_index(col * GRID_SIZE_X + start_x, row * GRID_SIZE_Y + start_y));
+        }
+    }
+    return needed_cells;
+}
+
+void Grid::insert_to_grid(const shared_ptr<Inst> &instance) {
+    if (instance->inst_name.find("OUTPUT") != string::npos || instance->inst_name.find("INPUT") != string::npos) {
+        return;
+    }
+    vector<uint32_t> needed_cells = get_needed_cells(instance->x, instance->y, instance->width, instance->height);
+    for (auto &index: needed_cells) {
+        auto new_cell = make_shared<GridCell>();
+        new_cell->instance = instance;
+        new_cell->next = cells[index];
+        cells[index] = new_cell;
+    }
 }
 
 bool Grid::check_overlap_grid(const shared_ptr<Inst> &instance) {
