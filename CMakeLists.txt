@@ -16,7 +16,8 @@ add_executable(IEDA_Final_Project
         read_input.cpp
         grid.cpp
         grid.h
-        utils.h utils.cpp)
+        utils.h utils.cpp
+        optimization.cpp)
 
 # Include directories
 target_include_directories(IEDA_Final_Project PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
