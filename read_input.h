@@ -5,7 +5,7 @@
 #include "grid.h"
 #include "structure.h"
 
-using namespace std;
+//using namespace std;
 
 int read_input(
     // Input file name

@@ -8,8 +8,7 @@
 #include <unordered_map>
 #include <memory>
 #include <cstring>
-#include "grid.h"
-#include "structure.h"
+#include "read_input.h"
 
 using namespace std;
 
@@ -139,17 +138,17 @@ int read_input(
         file >> prefix >> net->name >> net->pinCount;
         nets.map[net->name] = *net;
         for (uint64_t j = 0; j < net->pinCount; j++) {
-            auto pin = make_shared<NetPin>();
+            auto *pin = new NetPin();
             file >> prefix >> pin->key;
             if (pin->key.find('/') != string::npos) {
                 // Split the key into instance name and lib pin name by '/'
                 size_t pos = pin->key.find('/');
-                strcpy(pin->instName, pin->key.substr(0, pos).c_str());
-                strcpy(pin->libPinName, pin->key.substr(pos + 1).c_str());
+                pin->instName = pin->key.substr(0, pos);
+                pin->libPinName = pin->key.substr(pos + 1);
             } else {
                 // pin->instName, pin->libPinName are same as pin->key
-                strcpy(pin->instName, pin->key.c_str());
-                strcpy(pin->libPinName, pin->key.c_str());
+                pin->instName = pin->key;
+                pin->libPinName = pin->key;
             }
             net->map[pin->instName] = *pin;
         }

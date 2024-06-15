@@ -4,13 +4,6 @@
 
 #include "grid.h"
 
-#include "grid.h"
-#include <iostream>
-#include <vector>
-#include <memory>
-
-using namespace std;
-
 void Grid::create_grid(uint32_t width, uint32_t height, uint32_t gridSizeX, uint32_t gridSizeY, uint32_t startX,
                        uint32_t startY) {
     this->GRID_SIZE_X = gridSizeX;
@@ -21,9 +14,9 @@ void Grid::create_grid(uint32_t width, uint32_t height, uint32_t gridSizeX, uint
     this->start_y = startY;
     this->cells.resize(rows * cols);
 
-    cout << "Grid created with " << rows << " rows and " << cols << " cols\n";
-    cout << "Grid cell size: " << gridSizeX << " x " << gridSizeY << "\n";
-    cout << "Grid start position: (" << startX << ", " << startY << ")\n";
+//    cout << "Grid created with " << rows << " rows and " << cols << " cols\n";
+//    cout << "Grid cell size: " << gridSizeX << " x " << gridSizeY << "\n";
+//    cout << "Grid start position: (" << startX << ", " << startY << ")\n";
 }
 
 void Grid::free_grid() {
@@ -63,14 +56,14 @@ bool Grid::check_overlap_grid(const shared_ptr<Inst> &instance) {
                     instance->x + instance->width > other->x &&
                     instance->y < other->y + other->height &&
                     instance->y + instance->height > other->y) {
-                    cout << "Overlap detected between " << instance->inst_name << " and " << other->inst_name << "\n";
+//                    cout << "Overlap detected between " << instance->inst_name << " and " << other->inst_name << "\n";
                     return true;
                 }
                 cell = cell->next;
             }
         }
     }
-    cout << "No overlap detected for " << instance->inst_name << "\n";
+//    cout << "No overlap detected for " << instance->inst_name << "\n";
     return false;
 }
 

@@ -42,11 +42,20 @@ int main(int argc, char *argv[]) {
 
     auto grid = make_shared<Grid>();
 
+    cout << fixed;
     cout << "Reading input..." << endl;
     // Assuming read_input is defined and works correctly
     read_input(filename, alpha, beta, gamma, lambda, *die, input_count, *inputs, output_count, *outputs, *ff_blocks,
                *gate_blocks, *instances, *nets, *bin, *placements_rows_set, *displacement_delay, *qpin_delay,
                *timing_slack, *gate_power, *grid);
+
+    // print all nets and its pins
+    for (auto &[key, net]: nets->map) {
+        cout << "Net: " << key << " " << net.map.size() << endl;
+        for (auto &[key, pin]: net.map) {
+            cout << "  Pin: " << key << " " << pin.instName << " " << pin.libPinName << endl;
+        }
+    }
 
     const string output_filename = "../output.txt";
     cout << "Score: " << calculate_score(ff_blocks, gate_blocks, instances, timing_slack, gate_power, qpin_delay,

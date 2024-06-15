@@ -13,32 +13,24 @@
 #include <unordered_map>
 #include <string>
 
-#define MAX_NAME_LEN 128
-#define USED 1
-#define NOT_USED 0
-
 using namespace std;
 
 class Pin {
 public:
-    char name[MAX_NAME_LEN];
+    string name;
     uint16_t x;
     uint16_t y;
 
-    Pin() : name(), x(), y() {
-        memset(name, 0, MAX_NAME_LEN);
-    }
+    Pin() : name(), x(), y() {}
 };
 
 class IO {
 public:
-    char name[MAX_NAME_LEN];
+    string name;
     uint32_t x;
     uint32_t y;
 
-    IO() : name(), x(), y() {
-        memset(name, 0, MAX_NAME_LEN);
-    }
+    IO() : name(), x(), y() {}
 };
 
 using Input = IO;
@@ -57,29 +49,25 @@ using Outputs = IOs;
 
 class FF {
 public:
-    char name[MAX_NAME_LEN];
+    string name;
     uint16_t bits;
     uint16_t width;
     uint16_t height;
     uint16_t pin_count;
     unordered_map<string, Pin> map;
 
-    FF() : name(), bits(0), width(0), height(0), pin_count(0) {
-        memset(name, 0, MAX_NAME_LEN);
-    }
+    FF() : name(), bits(0), width(0), height(0), pin_count(0) {}
 };
 
 class Gate {
 public:
-    char name[MAX_NAME_LEN];
+    string name;
     uint16_t width;
     uint16_t height;
     uint16_t pin_count;
     unordered_map<string, Pin> map;
 
-    Gate() : name(), width(0), height(0), pin_count(0) {
-        memset(name, 0, MAX_NAME_LEN);
-    }
+    Gate() : name(), width(0), height(0), pin_count(0) {}
 };
 
 class FFs {
@@ -100,18 +88,15 @@ public:
 
 class Inst {
 public:
-    char inst_name[MAX_NAME_LEN];
-    char lib_cell_name[MAX_NAME_LEN];
+    string inst_name;
+    string lib_cell_name;
     uint32_t x;
     uint32_t y;
     uint32_t width;
     uint32_t height;
     bool isUsed;
 
-    Inst() : inst_name(), lib_cell_name(), x(0), y(0), width(0), height(0), isUsed(NOT_USED) {
-        memset(inst_name, 0, MAX_NAME_LEN);
-        memset(lib_cell_name, 0, MAX_NAME_LEN);
-    }
+    Inst() : inst_name(), lib_cell_name(), x(0), y(0), width(0), height(0), isUsed(false) {}
 };
 
 class Insts {
@@ -124,25 +109,20 @@ public:
 
 class NetPin {
 public:
-    char instName[MAX_NAME_LEN];
-    char libPinName[MAX_NAME_LEN];
+    string instName;
+    string libPinName;
     string key;
 
-    NetPin() : instName(), libPinName() {
-        memset(instName, 0, MAX_NAME_LEN);
-        memset(libPinName, 0, MAX_NAME_LEN);
-    }
+    NetPin() : instName(), libPinName(), key() {}
 };
 
 class Net {
 public:
-    char name[MAX_NAME_LEN];
+    string name;
     int pinCount;
     unordered_map<string, NetPin> map;
 
-    Net() : name(), pinCount(0) {
-        memset(name, 0, MAX_NAME_LEN);
-    }
+    Net() : name(), pinCount(0) {}
 };
 
 class Nets {
@@ -174,12 +154,10 @@ public:
 
 class QpinDelay {
 public:
-    char libCellName[MAX_NAME_LEN];
+    string libCellName;
     double delay;
 
-    QpinDelay() : libCellName(), delay(0.0) {
-        memset(libCellName, 0, MAX_NAME_LEN);
-    }
+    QpinDelay() : libCellName(), delay(0.0) {}
 };
 
 class QpinDelays {
@@ -192,14 +170,11 @@ public:
 
 class TimingSlack {
 public:
-    char instanceCellName[MAX_NAME_LEN];
-    char pinName[MAX_NAME_LEN];
+    string instanceCellName;
+    string pinName;
     double slack;
 
-    TimingSlack() : instanceCellName(), pinName(), slack(0.0) {
-        memset(instanceCellName, 0, MAX_NAME_LEN);
-        memset(pinName, 0, MAX_NAME_LEN);
-    }
+    TimingSlack() : instanceCellName(), pinName(), slack(0.0) {}
 };
 
 class TimingSlacks {
@@ -212,12 +187,10 @@ public:
 
 class GatePower {
 public:
-    char libCellName[MAX_NAME_LEN];
+    string libCellName;
     double powerConsumption;
 
-    GatePower() : libCellName(), powerConsumption(0.0) {
-        memset(libCellName, 0, MAX_NAME_LEN);
-    }
+    GatePower() : libCellName(), powerConsumption(0.0) {}
 };
 
 class GatePowers {
@@ -246,12 +219,10 @@ public:
 
 class InstNetMapping {
 public:
-    char instName[MAX_NAME_LEN];
+    string instName;
     Net *net;
 
-    InstNetMapping() : instName(), net(nullptr) {
-        memset(instName, 0, MAX_NAME_LEN);
-    }
+    InstNetMapping() : instName(), net(nullptr) {}
 };
 
 class Die {

@@ -13,14 +13,12 @@
 #include <memory>
 #include "structure.h"
 
-using namespace std;
-
 class GridCell {
 public:
     shared_ptr<Inst> instance;
     shared_ptr<GridCell> next;
 
-    GridCell() : instance(nullptr), next(nullptr) {}
+    GridCell() : instance(nullptr), next(nullptr) {};
 };
 
 class Grid {
@@ -33,7 +31,7 @@ public:
     uint32_t start_y;
     vector<shared_ptr<GridCell> > cells;
 
-    Grid() : rows(0), cols(0), GRID_SIZE_X(0), GRID_SIZE_Y(0), start_x(0), start_y(0) {}
+    Grid() : rows(0), cols(0), GRID_SIZE_X(0), GRID_SIZE_Y(0), start_x(0), start_y(0) {};
 
     void create_grid(uint32_t width, uint32_t height, uint32_t gridSizeX, uint32_t gridSizeY, uint32_t startX,
                      uint32_t startY);
