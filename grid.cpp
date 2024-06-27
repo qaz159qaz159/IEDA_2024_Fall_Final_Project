@@ -41,14 +41,14 @@ vector<uint32_t> Grid::get_needed_cells(uint32_t x, uint32_t y, uint32_t width, 
     return needed_cells;
 }
 
-void Grid::insert_to_grid(const shared_ptr<Inst> &instance) {
+void Grid::insert_to_grid(Inst *instance) {
     if (instance->instName.find("OUTPUT") != string::npos || instance->instName.find("INPUT") != string::npos) {
         return;
     }
     vector<uint32_t> needed_cells = get_needed_cells(instance->x, instance->y, instance->width, instance->height);
     for (auto &index: needed_cells) {
         auto new_cell = make_shared<GridCell>();
-        new_cell->instance = instance;
+        new_cell->instance = shared_ptr<Inst>(instance);
         new_cell->next = cells[index];
         cells[index] = new_cell;
     }
@@ -85,4 +85,18 @@ void Grid::get_position_by_index(uint32_t index, uint32_t &x, uint32_t &y) const
     uint32_t col = index % cols;
     x = col * gridSizeX;
     y = row * gridSizeY;
+}
+
+void Grid::print_first_20_grid_indices() const {
+    std::cout << "First 20 grid cell indices:" << std::endl;
+    for (uint32_t i = 1; i <= std::min(20u, rows * cols); ++i) {
+        uint32_t x, y;
+        get_position_by_index(i, x, y);
+        std::cout << "Grid " << i << ": "
+                  << "Index = " << i
+                  << ", Row = " << ((i - 1) / cols + 1)
+                  << ", Col = " << ((i - 1) % cols + 1)
+                  << ", (X, Y) = (" << x << ", " << y << ")"
+                  << std::endl;
+    }
 }

@@ -196,7 +196,7 @@ int read_input(
 
     // Insert instances to the grid
     for (auto &instance: instances.map) {
-        grid.insert_to_grid(make_shared<Inst>(instance.second));
+        grid.insert_to_grid(&instance.second);
     }
 
     stringstream displacement_ss(line);

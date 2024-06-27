@@ -3,6 +3,7 @@
 #include <string>
 #include "read_input.h"
 #include "utils.h"
+#include "optimization.h"
 
 using namespace std;
 
@@ -54,6 +55,13 @@ int main(int argc, char *argv[]) {
     cout << "Score: " << calculate_score(ff_blocks, gate_blocks, instances, timing_slack, gate_power, qpin_delay,
                                         displacement_delay, alpha, beta, gamma, lambda, bin, nets, inputs, outputs, die, output_filename)
          << endl;
+
+//    grid->print_first_20_grid_indices();
+    bank_flip_flops(instances, nets, ff_blocks, grid);
+//
+//    cout << "Score: " << calculate_score(ff_blocks, gate_blocks, instances, timing_slack, gate_power, qpin_delay,
+//                                         displacement_delay, alpha, beta, gamma, lambda, bin, nets, inputs, outputs, die, output_filename)
+//         << endl;
 
     return 0;
 }

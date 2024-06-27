@@ -39,7 +39,7 @@ public:
 
     void free_grid();
 
-    void insert_to_grid(const shared_ptr<Inst> &instance);
+    void insert_to_grid(Inst *instance);
 
     void get_position_by_index(uint32_t index, uint32_t &x, uint32_t &y) const;
 
@@ -48,6 +48,8 @@ public:
     [[nodiscard]] vector<uint32_t> get_needed_cells(uint32_t x, uint32_t y, uint32_t width, uint32_t height) const;
 
     bool check_overlap_grid(const shared_ptr<Inst> &instance);
+
+    void print_first_20_grid_indices() const;
 
 };
 
